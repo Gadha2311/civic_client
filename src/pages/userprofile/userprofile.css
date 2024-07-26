@@ -1,0 +1,115 @@
+.user-profile {
+  width: 5000px; 
+  height: 45vh; 
+  padding: 60px;
+  left: 100px;
+  background-color: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: flex-start;
+  position: relative; 
+  top: -110px;
+
+}
+
+.user-profile img {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #ccc;
+  margin-bottom: 20px;
+}
+
+.user-profile h1 {
+  font-size: 2em;
+  color: #333;
+  margin: 10px 0;
+}
+
+.user-profile p {
+  font-size: 1.2em;
+  color: #666;
+  margin: 5px 0;
+}
+
+.user-profile .user-details {
+  text-align: center;
+}
+
+.user-profile button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1em;
+  margin-top: 20px;
+}
+
+.user-profile button:hover {
+  background-color: #0056b3;
+}
+
+.userdetails {
+  display: flex;
+  justify-content: space-evenly;
+  width: 100%;
+  margin-top: 60px;
+  margin-left: -165px;
+
+}
+
+.userdetails div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.userdetails a {
+  margin-top: 10px;
+  padding: 15px 30px; 
+  border: 2px solid;
+  border-radius: 25px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.follow a {
+  color: #4a90e2;
+  border-color: #4a90e2;
+}
+
+.block a {
+  color: #ff0000;
+  border-color: #ff0000;
+}
+
+
+.follow a:hover {
+  background-color: #4a90e2;
+  color: #fff;
+}
+.block a:hover {
+  background-color:#ff0000;
+  color: #fff;
+}
+
+
+.userdetails a:active {
+  transform: scale(0.98);
+}
+.private-account{
+  
+  margin: 100px;
+  padding-top: 15px;
+  padding-left: 150px;
+}
+.private-account p{
+  padding-bottom: 15px;
+  color:  #4a90e2;
+}

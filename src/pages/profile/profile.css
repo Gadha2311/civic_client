@@ -1,0 +1,175 @@
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #e9f5ff;
+  margin: 0;
+  padding: 0;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.profile-container {
+  width: 5000px; 
+  height: 45vh; 
+  padding: 60px;
+  left: 100px;
+  background-color: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: flex-start;
+  position: relative; 
+  top: -110px;
+}
+
+
+.profile-picture {
+  flex: 0 0 300px;
+  display: grid;
+  justify-content: center;
+  align-items: center;
+  margin-right: 20px;
+  position: relative;
+  top: -30px;
+  left: -50px;
+
+}
+
+.profile-picture img {
+  width: 200px;
+  height: 200px;
+  border-radius: 100%;
+  border: 5px solid #4a90e2;
+  object-fit: cover;
+}
+
+
+.profile-info {
+  flex: 1;
+  text-align: left;
+  align-items: start;
+  margin-left: -70px;
+}
+
+.profile-info h1 {
+  margin: 10px 0;
+  font-size: 32px; 
+  color: #333;
+}
+
+.profile-info p {
+  font-size: 18px; 
+  color: #777;
+}
+
+
+.details {
+  display: flex;
+  justify-content: space-evenly;
+  width: 100%;
+  margin-top: 60px;
+  margin-left: -165px;
+
+}
+
+.details div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.details a {
+  margin-top: 10px;
+  padding: 15px 30px; 
+  border: 2px solid #4a90e2;
+  border-radius: 25px;
+  color: #4a90e2;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.details a:hover {
+  background-color: #4a90e2;
+  color: #fff;
+}
+
+
+.details a:active {
+  transform: scale(0.98);
+}
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+  padding-top: 20px;
+}
+
+.edit-options {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: #f9f9f9;
+  border: 1px solid #ccc;
+  padding: 10px;
+  display: none;
+  width: 150px;
+}
+
+.dropdown:hover .edit-options {
+  display: block;
+}
+
+.edit-options li {
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+}
+
+.edit-options li:hover {
+  background-color: #f0f0f0;
+}
+
+.edit-profile-form {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  z-index: 1000;
+}
+
+.edit-profile-form h2 {
+  margin-bottom: 10px;
+}
+
+.edit-profile-form form {
+  display: flex;
+  flex-direction: column;
+}
+
+.edit-profile-form label {
+  margin-bottom: 10px;
+}
+
+.edit-profile-form input {
+  padding: 8px;
+  margin-top: 4px;
+  margin-bottom: 10px;
+}
+
+.edit-profile-form button {
+  padding: 8px;
+  margin-top: 10px;
+}
+.switch-container {
+  position: absolute; 
+  top: 80px; 
+  right: 100px; 
+  transform: scale(0.7);
+}
