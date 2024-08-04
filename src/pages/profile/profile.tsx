@@ -9,7 +9,8 @@ import Axios from "../../axios";
 import EditProfileForm from "../../components/editprofile/editprofile";
 import { useLocation, useNavigate } from "react-router-dom";
 import Switch from "../../components/switch/switch";
-import Swal from 'sweetalert2';
+import Swal from "sweetalert2";
+import Post from "../post/post";
 
 const ProfilePicture: React.FC = () => {
   const [img, setImg] = useState<string | null>(null);
@@ -18,13 +19,21 @@ const ProfilePicture: React.FC = () => {
   const [uploading, setUploading] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isPrivate, setIsPrivate] = useState<boolean>(false);
+  const [showFollowers, setShowFollowers] = useState(false);
+  const [showFollowing, setShowFollowing] = useState(false);
+  const [followers, setFollowers] = useState([]);
+  const [following, setFollowing] = useState([]);
   const { userdata, token, setUserdata } = useAuth();
 
   const location = useLocation();
   const navigate = useNavigate();
 
   useEffect(() => {
-    const storedUserdata = JSON.parse(localStorage.getItem("user_data") || "{}");
+    const storedUserdata = JSON.parse(
+      localStorage.getItem("user_data") || "{}"
+    );
+    console.log(storedUserdata);
+
     if (!storedUserdata.user || !storedUserdata.userToken) {
       navigate("/login", { replace: true });
       return;
@@ -43,18 +52,22 @@ const ProfilePicture: React.FC = () => {
   };
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = e.target.files![0];
-    const reader = new FileReader();
-    reader.readAsDataURL(selectedFile);
-    reader.onloadend = () => {
-      setImg(reader.result as string);
-      setFile(selectedFile);
-      handleUpload(selectedFile);
-    };
+    if (e.target.files && e.target.files[0]) {
+      const selectedFile = e.target.files[0];
+      const reader = new FileReader();
+      reader.readAsDataURL(selectedFile);
+      reader.onloadend = () => {
+        setImg(reader.result as string);
+        setFile(selectedFile);
+        handleUpload(selectedFile);
+      };
+    }
   };
+  
 
   const handleSelectImage = () => {
     const fileInput = document.getElementById("fileInput") as HTMLInputElement;
+    
     fileInput.click();
   };
 
@@ -63,6 +76,7 @@ const ProfilePicture: React.FC = () => {
       setUploading(true);
       try {
         const formData = new FormData();
+        
         formData.append("img", selectedFile);
 
         const config = {
@@ -101,13 +115,15 @@ const ProfilePicture: React.FC = () => {
   const handleSwitchChange = async (newIsPrivate: boolean) => {
     try {
       const result = await Swal.fire({
-        title: 'Are you sure?',
-        text: `Do you want to make your account ${newIsPrivate ? 'private' : 'public'}?`,
-        icon: 'warning',
+        title: "Are you sure?",
+        text: `Do you want to make your account ${
+          newIsPrivate ? "private" : "public"
+        }?`,
+        icon: "warning",
         showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, change it!'
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, change it!",
       });
 
       if (result.isConfirmed) {
@@ -125,20 +141,25 @@ const ProfilePicture: React.FC = () => {
         setIsPrivate(updatedUser.isPrivate);
         userdata.isPrivate = updatedUser.isPrivate;
         setUserdata(updatedUser);
-        localStorage.setItem("user_data", JSON.stringify({ userToken: token, user: updatedUser }));
+        localStorage.setItem(
+          "user_data",
+          JSON.stringify({ userToken: token, user: updatedUser })
+        );
 
         Swal.fire(
-          'Updated!',
-         ` Your account has been ${newIsPrivate ? 'made private' : 'made public'}.`,
-          'success'
+          "Updated!",
+          ` Your account has been ${
+            newIsPrivate ? "made private" : "made public"
+          }.`,
+          "success"
         );
       }
     } catch (err) {
       console.error(err);
       Swal.fire(
-        'Error!',
-        'There was an error updating your privacy status. Please try again later.',
-        'error'
+        "Error!",
+        "There was an error updating your privacy status. Please try again later.",
+        "error"
       );
     }
   };
@@ -151,16 +172,42 @@ const ProfilePicture: React.FC = () => {
     setIsFormOpen(false);
   };
 
+  const handleShowFollowers = async () => {
+    setShowFollowers(true);
+    try {
+      const response = await Axios.get(`/auth/getFollowers/${userdata._id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setFollowers(response.data);
+    } catch (err) {
+      console.error("Failed to fetch followers:", err);
+    }
+  };
+
+  const handleShowFollowing = async () => {
+    setShowFollowing(true);
+    try {
+      const response = await Axios.get(`/auth/getFollowing/${userdata._id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setFollowing(response.data);
+    } catch (err) {
+      console.error("Failed to fetch following:", err);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setShowFollowers(false);
+    setShowFollowing(false);
+  };
+
   return (
     <div className="profile">
       <Navbar />
       <Sidebar />
       <div className="profile-container">
         <div className="profile-picture">
-          <img
-            src={img || userdata.profilePicture}
-            alt="Profile Picture"
-          />
+          <img src={img || userdata.profilePicture} alt="Profile Picture" />
           {uploading && <p>Uploading...</p>}
           <div className="dropdown">
             <button onClick={handleEditClick}>Edit</button>
@@ -187,25 +234,54 @@ const ProfilePicture: React.FC = () => {
         <div className="profile-info">
           <h1>{userdata.username}</h1>
           <p>{userdata.bio}</p>
+        </div>
 
+        <div className="profile-details">
           <div className="details">
             <div className="followers">
-              <a href="#">FOLLOWERS</a>
+              <a href="#" onClick={handleShowFollowers}>
+                <span className="count">{userdata.followers.length}</span>
+                <span className="label">FOLLOWERS</span>
+              </a>
             </div>
             <div className="following">
-              <a href="#">FOLLOWING</a>
+              <a href="#" onClick={handleShowFollowing}>
+                <span className="count">{userdata.following.length}</span>
+                <span className="label">FOLLOWING</span>
+              </a>
             </div>
           </div>
-        </div>
-        <div className="switch-container">
-          <Switch
-            isPrivate={isPrivate}
-            onChange={handleSwitchChange}
-          />
+          <div className="switch-container">
+            <Switch isPrivate={isPrivate} onChange={handleSwitchChange} />
+          </div>
         </div>
       </div>
 
       {isFormOpen && <EditProfileForm closeForm={closeForm} />}
+
+      {(showFollowers || showFollowing) && (
+        <div className="modal">
+          <div className="modal-content">
+            <span className="close" onClick={handleCloseModal}>
+              &times;
+            </span>
+            <h2>{showFollowers ? "Followers" : "Following"}</h2>
+            <ul>
+              {(showFollowers ? followers : following).map(
+                (user: any) => (
+                  <li key={user.id}>
+                    <img src={user.profilePicture} alt={user.username} />
+                    <span>{user.username}</span>
+                  </li>
+                )
+              )}
+            </ul>
+          </div>
+        </div>
+      )}
+      <div className="users-posts">
+            <Post />
+          </div>
     </div>
   );
 };

@@ -20,14 +20,14 @@ const Sidebar = () => {
     navigate("/login");
   };
   const handleProfileClick = () => {
-    navigate("/profile"); 
+    navigate("/profile");
   };
-  const handleSearch=()=>{
-    navigate("/search")
-  }
-  const handleHome=()=>{
-    navigate("/home")
-  }
+  const handleSearch = () => {
+    navigate("/search");
+  };
+  const handleHome = () => {
+    navigate("/home");
+  };
   return (
     <div className="sidebar-container">
       <ul>
@@ -50,7 +50,7 @@ const Sidebar = () => {
         </p>
         <p>
           <li onClick={handleSearch}>
-          <FontAwesomeIcon icon={faSearch} />  Search
+            <FontAwesomeIcon icon={faSearch} /> Search
           </li>
         </p>
         <p>

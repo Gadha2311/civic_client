@@ -76,20 +76,20 @@ function App() {
               }
             />
             <Route
-            path="/search"
-            element={
-              <ProtectedRoute>
-                <Search/>
-              </ProtectedRoute>
-            }
+              path="/search"
+              element={
+                <ProtectedRoute>
+                  <Search />
+                </ProtectedRoute>
+              }
             />
             <Route
-            path="/user/:userId"
-            element={
-              <ProtectedRoute>
-                <UserProfile/>
-              </ProtectedRoute>
-            }
+              path="/user/:userId"
+              element={
+                <ProtectedRoute>
+                  <UserProfile />
+                </ProtectedRoute>
+              }
             />
             <Route
               path="/profile"

@@ -1,0 +1,101 @@
+.followed-posts {
+  padding: 20px;
+  max-width: 1000px;
+  margin: 0 auto;
+ 
+}
+
+.follower-post {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.post-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.post-header-content {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-left: 8px;
+}
+
+
+.post-desc {
+  font-size: 1rem;
+  color: #555;
+  margin: 0;
+  text-align: left; 
+}
+
+.post-meta {
+  color: #888;
+  font-size: 0.9rem;
+  margin-top: 8px;
+}
+
+.carousel-container {
+  margin-top: 12px;
+  width: 600px; 
+  height: 400px; 
+  overflow: hidden;
+}
+
+.carousel-paper {
+  border-radius: 8px;
+}
+
+.post-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; 
+  border-radius: 8px;
+}
+
+.MuiDialog-paper {
+  padding: 16px;
+}
+
+.MuiDialogActions-root {
+  padding: 16px;
+}
+
+.MuiButton-root {
+  text-transform: none;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.no-posts {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #555;
+}
+
+.post-avatar {
+  width: 40px;
+  height: 40px;
+  margin-right: 8px;
+}
+
+.post-author {
+  font-weight: bold;
+  font-size: 1rem;
+  color: #333;
+  margin-right: auto; 
+}
