@@ -28,6 +28,9 @@ const Sidebar = () => {
   const handleHome = () => {
     navigate("/home");
   };
+  const handleNotification = () =>{
+    navigate("/notification")
+  }
   return (
     <div className="sidebar-container">
       <ul>
@@ -44,7 +47,7 @@ const Sidebar = () => {
         </p>
 
         <p>
-          <li>
+          <li onClick={handleNotification}>
             <FontAwesomeIcon icon={faBell} /> Notifications
           </li>
         </p>

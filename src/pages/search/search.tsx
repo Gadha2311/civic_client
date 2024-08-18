@@ -4,8 +4,10 @@ import Sidebar from "../../components/sidebar/sidebar";
 import { useNavigate } from "react-router-dom";
 import "./search.css";
 import Axios from "../../axios";
+import { useAuth } from "../../context/AuthContext";
 
 const Search: React.FC = () => {
+  const { config } = useAuth();
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [showSuggestions, setShowSuggestions] = useState<boolean>(true);
@@ -20,7 +22,7 @@ const Search: React.FC = () => {
   const handleSearch = () => {
     setLoading(true);
     setShowSuggestions(false);
-    Axios.get(`/auth/search/${searchTerm}`)
+    Axios.get(`/auth/search/${searchTerm}`, config)
       .then((res) => {
         console.log(`API response: ${res.data}`);
         setSearchResults(res.data);
@@ -39,7 +41,7 @@ const Search: React.FC = () => {
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       if (searchTerm.length >= 2) {
-        Axios.get(`/auth/search/${searchTerm}`)
+        Axios.get(`/auth/search/${searchTerm}`, config)
           .then((res) => {
             console.log(`API response: ${res.data}`);
             setSearchResults(res.data);
@@ -53,7 +55,7 @@ const Search: React.FC = () => {
     }, 500);
 
     return () => clearTimeout(timeoutId);
-  }, [searchTerm]);
+  }, [searchTerm, config]);
 
   return (
     <div className="search">
@@ -77,7 +79,11 @@ const Search: React.FC = () => {
         <div className="search-results-container">
           {searchResults.length > 0
             ? searchResults.map((user) => (
-                <div key={user._id} className="search-result-item" onClick={() => handleUserClick(user._id)}>
+                <div
+                  key={user._id}
+                  className="search-result-item"
+                  onClick={() => handleUserClick(user._id)}
+                >
                   <img
                     src={user.profilePicture}
                     alt={user.username}

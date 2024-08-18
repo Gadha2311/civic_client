@@ -1,9 +1,9 @@
 import "./home.css";
-import React, { useState } from "react";
+import React, { useState, lazy} from "react";
 import Sidebar from "../../components/sidebar/sidebar";
 import Navbar from "../../components/navbar/navbar";
 import AddPost from "../../components/Addpost/Addpost";
-import FollowedPosts from "../../components/allpost/allpost";
+const FollowedPosts = lazy(() => import('../../components/allpost/allpost'));
 
 const Homepage = () => {
   const [postsUpdated, setPostsUpdated] = useState<boolean>(false);

@@ -1,5 +1,17 @@
-import React, { useState, useEffect, MouseEvent, ChangeEvent } from "react";
+import React, {
+  useState,
+  useEffect,
+  MouseEvent,
+  ChangeEvent,
+  FormEvent,
+} from "react";
 import { useAuth } from "../../context/AuthContext";
+import {
+  Comment,
+  Postinterface,
+  AuthContextType,
+  AnchorEl,
+} from "../../Interfaces/postInterface";
 import Axios from "../../axios";
 import "./post.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -7,6 +19,9 @@ import {
   faEllipsisV,
   faEdit,
   faTrash,
+  faThumbsUp,
+  faCommentDots,
+  faTimes,
 } from "@fortawesome/free-solid-svg-icons";
 import {
   Menu,
@@ -27,63 +42,49 @@ import "react-toastify/dist/ReactToastify.css";
 import { AdvancedImage } from "@cloudinary/react";
 import { Cloudinary } from "@cloudinary/url-gen";
 import Carousel from "react-material-ui-carousel";
-
-interface Post {
-  _id: string;
-  desc: string;
-  img?: string[];
-  createdAt: string;
-}
-
-interface AuthContextType {
-  token: string;
-  userdata: {
-    _id: string;
-    username: string;
-    profilePicture: string;
-  };
-}
-
-interface AnchorEl {
-  element: HTMLElement;
-  postId: string;
-  username: string;
-}
+import Swal from "sweetalert2";
 
 const Post: React.FC = () => {
   const { token, userdata } = useAuth() as AuthContextType;
-  const [posts, setPosts] = useState<Post[]>([]);
+  const [posts, setPosts] = useState<Postinterface[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [anchorEl, setAnchorEl] = useState<AnchorEl | null>(null);
   const [editPostId, setEditPostId] = useState<string | null>(null);
   const [newDesc, setNewDesc] = useState<string>("");
+  const [newImage, setNewImage] = useState<File | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
   const [postIdToDelete, setPostIdToDelete] = useState<string | null>(null);
   const [loadingActions, setLoadingActions] = useState<Record<string, boolean>>(
     {}
   );
+  const [newComment, setNewComment] = useState<string>("");
+  const [commentingPostId, setCommentingPostId] = useState<string | null>(null);
+  const [showComments, setShowComments] = useState<Record<string, boolean>>({});
+
+  const fetchUserPosts = async () => {
+    try {
+      const response = await Axios.get(
+        `/auth/posts/${userdata._id}`
+        //   {
+        //   headers: {
+        //     Authorization: `Bearer ${token}`,
+        //   },
+        // }
+      );
+
+      const sortedPosts = response.data.sort(
+        (a: Postinterface, b: Postinterface) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
+      setPosts(sortedPosts);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching user posts:", error);
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchUserPosts = async () => {
-      try {
-        const response = await Axios.get(`/auth/posts/${userdata._id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        const sortedPosts = response.data.sort(
-          (a: Post, b: Post) =>
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        );
-        setPosts(sortedPosts);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching user posts:", error);
-        setLoading(false);
-      }
-    };
-
     if (userdata) {
       fetchUserPosts();
     }
@@ -99,36 +100,46 @@ const Post: React.FC = () => {
     return imageUrl.split("/").pop()?.split(".")[0] || "";
   };
 
-  const handleEdit = (post: Post) => {
+  const handleEdit = (post: Postinterface) => {
     setEditPostId(post._id);
     setNewDesc(post.desc);
     setAnchorEl(null);
   };
 
+  const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setNewImage(event.target.files![0]);
+  };
+
   const handleSave = async (postId: string) => {
-    setLoadingActions((prev) => ({ ...prev, [postId]: true }));
-    const originalPosts = [...posts];
-    setPosts(
-      posts.map((post) =>
-        post._id === postId ? { ...post, desc: newDesc } : post
-      )
-    );
+    const formData = new FormData();
+    formData.append("desc", newDesc);
+    if (newImage) {
+      formData.append("image", newImage);
+    }
+
     try {
-      await Axios.put(
-        `/auth/editpost/${postId}`,
-        { desc: newDesc },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      await Axios.put(`/auth/editpost/${postId}`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          // Authorization: `Bearer ${token}`,
+        },
+      });
       setEditPostId(null);
+      const updatedPosts = posts.map((post) => {
+        if (post._id === postId) {
+          return {
+            ...post,
+            desc: newDesc,
+            img: newImage ? [...post.img!, newImage.name] : post.img,
+          };
+        }
+        return post;
+      });
+
+      setPosts(updatedPosts);
+      fetchUserPosts();
     } catch (error) {
       console.error("Error editing post:", error);
-      setPosts(originalPosts);
-    } finally {
-      setLoadingActions((prev) => ({ ...prev, [postId]: false }));
     }
   };
 
@@ -138,11 +149,14 @@ const Post: React.FC = () => {
     const originalPosts = [...posts];
     setPosts(posts.filter((post) => post._id !== postIdToDelete));
     try {
-      await Axios.delete(`/auth/deletepost/${postIdToDelete}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      await Axios.delete(
+        `/auth/deletepost/${postIdToDelete}`
+        //   {
+        //   headers: {
+        //     Authorization: `Bearer ${token}`,
+        //   },
+        // }
+      );
       setDeleteDialogOpen(false);
       setPostIdToDelete(null);
       toast.success(`Post deleted successfully.`);
@@ -152,6 +166,81 @@ const Post: React.FC = () => {
       toast.error("Error deleting post.");
     } finally {
       setLoadingActions((prev) => ({ ...prev, [postIdToDelete]: false }));
+    }
+  };
+
+  const handleLike = async (postId: string) => {
+    setLoadingActions((prev) => ({ ...prev, [postId]: true }));
+    try {
+      await Axios.post(
+        `/auth/likepost/${postId}`,
+        {}
+        // {
+        //   headers: { Authorization: `Bearer ${token}` },
+        // }
+      );
+      setPosts((prevPosts) =>
+        prevPosts.map((post) =>
+          post._id === postId
+            ? {
+                ...post,
+                likes: post.likes.includes(userdata._id)
+                  ? post.likes.filter((id) => id !== userdata._id)
+                  : [...post.likes, userdata._id],
+              }
+            : post
+        )
+      );
+    } catch (error) {
+      console.error("Error liking post:", error);
+    } finally {
+      setLoadingActions((prev) => ({ ...prev, [postId]: false }));
+    }
+  };
+
+  const handleCommentChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setNewComment(event.target.value);
+  };
+
+  const handleCommentSubmit = async (event: FormEvent, postId: string) => {
+    event.preventDefault();
+    if (!newComment.trim()) return;
+
+    try {
+      const response = await Axios.post(
+        `/auth/commentpost/${postId}`,
+        { text: newComment }
+        // {
+        //   headers: {
+        //     Authorization: `Bearer ${token}`,
+        //   },
+        // }
+      );
+
+      const addedComment = response.data;
+
+      setPosts((prevPosts) =>
+        prevPosts.map((post) =>
+          post._id === postId
+            ? {
+                ...post,
+                comments: [
+                  ...(post.comments || []),
+                  {
+                    _id: addedComment._id,
+                    text: newComment,
+                    username: userdata.username,
+                    createdAt: addedComment.createdAt,
+                  },
+                ],
+              }
+            : post
+        )
+      );
+      setNewComment("");
+    } catch (error) {
+      console.error("Error adding comment:", error);
+      toast.error("Error adding comment.");
     }
   };
 
@@ -172,6 +261,50 @@ const Post: React.FC = () => {
   const handleCloseDeleteDialog = () => {
     setDeleteDialogOpen(false);
     setPostIdToDelete(null);
+  };
+
+  const toggleCommentsVisibility = (postId: string) => {
+    setShowComments((prev) => ({ ...prev, [postId]: !prev[postId] }));
+  };
+
+  const handleDeleteImage = async (imageUrl: string, postId: string) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "Do you want to delete this image?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await Axios.post(
+            `/auth/deleteimage/${postId}`,
+            { imageUrl }
+            // {
+            //   headers: { Authorization: `Bearer ${token}` },
+            // }
+          );
+          console.log(`postId: ${postId}`);
+
+          setPosts((prevPosts) =>
+            prevPosts.map((post) =>
+              post._id === postId
+                ? {
+                    ...post,
+                    img: post.img?.filter((img) => img !== imageUrl),
+                  }
+                : post
+            )
+          );
+          toast.success("Image deleted successfully.");
+        } catch (error) {
+          console.error("Error deleting image:", error);
+          toast.error("Error deleting image.");
+        }
+      }
+    });
   };
 
   if (loading) {
@@ -211,7 +344,7 @@ const Post: React.FC = () => {
             </Menu>
           </div>
           {editPostId === post._id ? (
-            <div>
+            <div className="editpost">
               <TextField
                 value={newDesc}
                 onChange={(e: ChangeEvent<HTMLInputElement>) =>
@@ -219,18 +352,39 @@ const Post: React.FC = () => {
                 }
                 fullWidth
               />
+              <input type="file" onChange={handleImageChange} />
               <Button onClick={() => handleSave(post._id)}>Save</Button>
+              {post.img && post.img.length > 0 && (
+                <div>
+                  <h4>Current Images:</h4>
+                  {post.img.map((imageUrl, index) => (
+                    <div key={index} className="current-image">
+                      <AdvancedImage
+                        cldImg={cld.image(publicId(imageUrl))}
+                        alt="Post image"
+                        className="carousel-image"
+                      />
+                      <IconButton
+                        onClick={() => handleDeleteImage(imageUrl, post._id)}
+                      >
+                        <FontAwesomeIcon icon={faTimes} />
+                      </IconButton>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           ) : (
             <>
               <p>{post.desc}</p>
               {post.img && post.img.length > 0 && (
                 <Carousel className="carousel-container">
-                  {post.img.map((imgUrl, index) => (
-                    <Paper key={index} className="carousel-paper">
+                  {post.img.map((imageUrl, index) => (
+                    <Paper key={index} className="carousel-item">
                       <AdvancedImage
-                        cldImg={cld.image(publicId(imgUrl))}
-                        className="post-image"
+                        cldImg={cld.image(publicId(imageUrl))}
+                        alt="Post image"
+                        className="carousel-image"
                       />
                     </Paper>
                   ))}
@@ -238,23 +392,75 @@ const Post: React.FC = () => {
               )}
             </>
           )}
-          {/* <div className="post-meta">
-            <span>{new Date(post.createdAt).toLocaleString()}</span>
-          </div> */}
+          <div className="post-meta">
+            <div className="like-container">
+              <Button
+                className="like-button"
+                onClick={() => handleLike(post._id)}
+                disabled={loadingActions[post._id]}
+              >
+                <FontAwesomeIcon
+                  icon={faThumbsUp}
+                  style={{
+                    color: post.likes.includes(userdata._id) ? "blue" : "gray",
+                  }}
+                />
+                <span className="like-count">{post.likes.length}</span>
+              </Button>
+            
+            <IconButton
+              className="comment-button"
+              onClick={() => toggleCommentsVisibility(post._id)}
+            >
+              <FontAwesomeIcon icon={faCommentDots} />
+              <span className="comment-count">
+                {post.comments ? post.comments.length : 0}
+              </span>
+            </IconButton>
+            </div>
+          </div>
+          {showComments[post._id] && (
+            <div className="comments-section">
+              {post.comments?.map((comment) => (
+                <div key={comment._id} className="comment">
+                  <span className="comment-author">{comment.username}</span>
+                  <p className="comment-text">{comment.text}</p>
+                  <span className="comment-date">
+                    {new Date(comment.createdAt).toLocaleDateString()}
+                  </span>
+                </div>
+              ))}
+              <form
+                onSubmit={(e) => handleCommentSubmit(e, post._id)}
+                className="comment-form"
+              >
+                <TextField
+                  value={newComment}
+                  onChange={handleCommentChange}
+                  placeholder="Add a comment..."
+                  fullWidth
+                />
+                <Button type="submit">Comment</Button>
+              </form>
+            </div>
+          )}
         </div>
       ))}
       <Dialog open={deleteDialogOpen} onClose={handleCloseDeleteDialog}>
-        <DialogTitle>Confirm Deletion</DialogTitle>
+        <DialogTitle>Delete Post</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Are you sure you want to delete this post?
+            Are you sure you want to delete this post? This action cannot be
+            undone.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseDeleteDialog} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={handleDelete} color="secondary">
+          <Button onClick={handleCloseDeleteDialog}>Cancel</Button>
+          <Button
+            onClick={handleDelete}
+            color="error"
+            disabled={loadingActions[postIdToDelete || ""]}
+          >
             Delete
           </Button>
         </DialogActions>

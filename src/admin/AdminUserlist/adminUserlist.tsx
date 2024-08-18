@@ -4,51 +4,71 @@ import "./adminUserlist.css";
 import Axios from "../../axios";
 import Swal from "sweetalert2";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrash, faEdit } from "@fortawesome/free-solid-svg-icons";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { useAdminAuth } from "../../context/AdminAuthContext";
+import { User } from "../../Interfaces/profileInterface";
 
-interface User {
-  
-  _id: string;
-  username: string;
-  email: string;
-  profilePicture: string;
-  blocked: boolean;
-}
 
 const UserTable: React.FC = () => {
+  const { admintoken } = useAdminAuth();
   const [users, setUsers] = useState<User[]>([]);
   const [searchtext, setSearchtext] = useState<string>("");
   const [userlist, setUserlist] = useState<User[]>([]);
   const [showsort, setShowsort] = useState<boolean>(false);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [usersPerPage] = useState<number>(6);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [totalPages, setTotalPages] = useState<number>(1);
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await Axios.get("/auth/userlist");
-        console.log("Fetched Users:", response.data);
-        setUsers(response.data);
-        setUserlist(response.data);
-      } catch (error) {
-        console.error("Error fetching users:", error);
-      }
-    };
-
-    fetchUsers();
-  }, []);
-
-  // Search user
-  const handleSearch = () => {
-    if (searchtext === "") {
-      setUserlist(users);
-    } else {
-      const filteredData = users.filter((user) =>
-        user.username.toLowerCase().includes(searchtext.toLowerCase())
+  // Fetch users from API
+  const fetchUsers = async () => {
+    setLoading(true);
+    try {
+      const response = await Axios.get(
+        `/auth/userlist?page=${currentPage}&limit=${usersPerPage}`,
+        {
+          headers: { Authorization: `Bearer ${admintoken}` },
+        }
       );
-      setUserlist(filteredData);
+      setUsers(response.data.users);
+      setUserlist(response.data.users);
+      setTotalPages(response.data.totalPages);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  // Block and unblock user
+  const fetchSearchResults = async () => {
+    setLoading(true);
+    try {
+      const response = await Axios.get(
+        `/auth/search/${searchtext}?page=${currentPage}&limit=${usersPerPage}`,
+        {
+          headers: { Authorization: `Bearer ${admintoken}` },
+        }
+      );
+      console.log("Search results:", response.data);
+      setUserlist(response.data);
+      setTotalPages(response.data.totalPages);
+    } catch (error) {
+      console.error("Error searching users:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    fetchUsers();
+  }, [currentPage, admintoken]);
+  useEffect(() => {
+    if (searchtext.length >= 2) {
+      fetchSearchResults();
+    } else {
+      setUserlist(users);
+    }
+  }, [searchtext, users, currentPage]);
+
   const BlockStatus = async (userId: string, currentStatus: boolean) => {
     Swal.fire({
       title: `Are you sure you want to ${
@@ -89,11 +109,12 @@ const UserTable: React.FC = () => {
     });
   };
 
-  // Sorting
+ 
   const handlesort = () => {
     setShowsort(!showsort);
   };
 
+  
   const sortAZ = () => {
     const sortedUsers = [...userlist].sort((a, b) =>
       a.username.localeCompare(b.username)
@@ -101,6 +122,7 @@ const UserTable: React.FC = () => {
     setUserlist(sortedUsers);
     setShowsort(false);
   };
+
 
   const sortZA = () => {
     const sortedUsers = [...userlist].sort((a, b) =>
@@ -110,7 +132,7 @@ const UserTable: React.FC = () => {
     setShowsort(false);
   };
 
-  // Delete user
+ 
   const Deleteuser = async (userId: string) => {
     Swal.fire({
       title: `Are you sure you want to delete this user?`,
@@ -138,6 +160,9 @@ const UserTable: React.FC = () => {
     });
   };
 
+
+  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
+
   return (
     <div className="user-table">
       <h2>User List</h2>
@@ -147,11 +172,12 @@ const UserTable: React.FC = () => {
           className="search-input"
           placeholder="Search"
           value={searchtext}
-          onChange={(e) => {
-            setSearchtext(e.target.value);
-          }}
+          onChange={(e) => setSearchtext(e.target.value)}
         />
-        <button className="usersearch-btn" onClick={handleSearch}>
+        <button
+          className="usersearch-btn"
+          onClick={() => setSearchtext(searchtext)}
+        >
           Search
         </button>
         <div className="sort-container">
@@ -184,34 +210,54 @@ const UserTable: React.FC = () => {
           </tr>
         </thead>
         <tbody>
-          {userlist.map((user) => (
-            <tr key={user._id}>
-              <td>{user.username}</td>
-              <td>{user.email}</td>
-              <td>
-                <img src={user.profilePicture} alt="Profile" width="50" />
-              </td>
-              <td>{user.blocked ? "Blocked" : "Unblocked"}</td>
-              <td>
-                <button
-                  className={`block-btn ${user.blocked ? "unblock" : "block"}`}
-                  onClick={() => BlockStatus(user._id, user.blocked)}
-                >
-                  {user.blocked ? "Unblock" : "Block"}
-                </button>
-              </td>
-              <td>
-                <button className="delete-btn">
-                  <FontAwesomeIcon
-                    icon={faTrash}
-                    onClick={() => Deleteuser(user._id)}
-                  />
-                </button>
-              </td>
+          {loading ? (
+            <tr>
+              <td colSpan={7}>Loading...</td>
             </tr>
-          ))}
+          ) : (
+            userlist.map((user) => (
+              <tr key={user._id}>
+                <td>{user.username}</td>
+                <td>{user.email}</td>
+                <td>
+                  <img src={user.profilePicture} alt="Profile" width="50" />
+                </td>
+                <td>{user.blocked ? "Blocked" : "Unblocked"}</td>
+                <td>
+                  <button
+                    className={`block-btn ${
+                      user.blocked ? "unblock" : "block"
+                    }`}
+                    onClick={() => BlockStatus(user._id, user.blocked)}
+                  >
+                    {user.blocked ? "Unblock" : "Block"}
+                  </button>
+                </td>
+                <td>
+                  <button className="delete-btn">
+                    <FontAwesomeIcon
+                      icon={faTrash}
+                      onClick={() => Deleteuser(user._id)}
+                    />
+                  </button>
+                </td>
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
+
+      <div className="pagination">
+        {Array.from({ length: totalPages }, (_, index) => (
+          <button
+            key={index + 1}
+            className={`page-btn ${currentPage === index + 1 ? "active" : ""}`}
+            onClick={() => paginate(index + 1)}
+          >
+            {index + 1}
+          </button>
+        ))}
+      </div>
     </div>
   );
 };

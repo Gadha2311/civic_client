@@ -1,29 +1,22 @@
-import React, { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { AdminAuthContextProps, AdminAuthProviderProps } from "../Interfaces/adminAuthInterfaces"
 
-interface AdminAuthContextProps {
-  admintoken: string | null;
-  isAdminAuthenticated: boolean;
-  Adminlogin: (newToken: string, newData: any) => void;
-  Adminlogout: () => void;
-}
 
 const AdminAuthContext = createContext<AdminAuthContextProps | undefined>(undefined);
 
-interface AdminAuthProviderProps {
-  children: ReactNode;
-}
+
 
 export const AdminAuthProvider: React.FC<AdminAuthProviderProps> = ({ children }) => {
   const [admintoken, setAdmintoken] = useState<string | null>(null);
-  const [userdata, setUserdata] = useState<any>(null);
-  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState<boolean>(false);
+  const [admindata, setAdmindata] = useState<any | null>(null);
+  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState<boolean>(false);  
   const storedData = JSON.parse(localStorage.getItem("admin_data") || "null");
 
   useEffect(() => {
     if (storedData) {
       const { adminToken, user } = storedData;
       setAdmintoken(adminToken);
-      setUserdata(user);
+      setAdmindata(user);
       setIsAdminAuthenticated(true);
     }
   }, []);
@@ -34,20 +27,20 @@ export const AdminAuthProvider: React.FC<AdminAuthProviderProps> = ({ children }
       JSON.stringify({ adminToken: newToken, user: newData })
     );
     setAdmintoken(newToken);
-    setUserdata(newData);
+    setAdmindata(newData);
     setIsAdminAuthenticated(true);
   };
 
   const Adminlogout = () => {
     localStorage.removeItem("admin_data");
     setAdmintoken(null);
-    setUserdata(null);
+    setAdmindata(null);
     setIsAdminAuthenticated(false);
   };
 
   return (
     <AdminAuthContext.Provider
-      value={{ admintoken, isAdminAuthenticated, Adminlogin, Adminlogout }}
+      value={{ admintoken, admindata, isAdminAuthenticated, Adminlogin, Adminlogout }}
     >
       {children}
     </AdminAuthContext.Provider>

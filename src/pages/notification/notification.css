@@ -1,0 +1,29 @@
+
+.notification-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.notification-list {
+  margin: 20px;
+}
+
+.notification-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.notification-avatar {
+  margin-right: 10px;
+}
+
+.notification-time {
+  font-size: 0.8em;
+  color: gray;
+}
+
+.notification-content {
+  flex-grow: 1;
+}

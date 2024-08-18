@@ -145,3 +145,30 @@ img {
 .edit-btn:hover {
   background-color: white;
 }
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.page-btn {
+  padding: 10px 15px;
+  border: none;
+  background-color: #007bff;
+  color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+  margin: 0 5px;
+  transition: background-color 0.3s ease;
+}
+
+.page-btn:hover {
+  background-color: #0056b3;
+}
+
+.page-btn.active {
+  background-color: #0056b3;
+  pointer-events: none;
+}
+

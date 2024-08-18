@@ -1,11 +1,9 @@
 import  { useState, ChangeEvent, FormEvent } from "react";
 import "./adminLogin.css";
 import useAdminLogin from "../../hooks/useAdminLogin";
+import { FormValues } from "../../Interfaces/adminInterface";
 
-interface FormValues {
-  email: string;
-  password: string;
-}
+
 
 const Form = () => {
   const { loading, error, LoginAdmin } = useAdminLogin();

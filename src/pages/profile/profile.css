@@ -134,8 +134,8 @@ a {
   background-color: #f9f9f9;
   border: 1px solid #ccc;
   padding: 10px;
-  display: none;
   width: 150px;
+  z-index: 1;
 }
 
 .dropdown:hover .edit-options {

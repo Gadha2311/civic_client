@@ -7,10 +7,9 @@ import Axios from "../../axios";
 import InsertEmoticonIcon from "@mui/icons-material/InsertEmoticon";
 import EmojiPicker from "emoji-picker-react";
 import CloseIcon from "@mui/icons-material/Close";
+import { AddPostProps } from "../../Interfaces/postInterface";
 
-interface AddPostProps {
-  onPostAdded: () => void;
-}
+
 
 const AddPost: React.FC<AddPostProps> = ({ onPostAdded }) => {
   const [desc, setDesc] = useState("");
@@ -74,7 +73,7 @@ const AddPost: React.FC<AddPostProps> = ({ onPostAdded }) => {
         const config = {
           headers: {
             "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${token}`,
+            // Authorization: `Bearer ${token}`,
           },
         };
 

@@ -6,17 +6,9 @@ import "./userprofile.css";
 import Navbar from "../../components/navbar/navbar";
 import Sidebar from "../../components/sidebar/sidebar";
 import { useAuth } from "../../context/AuthContext";
+import Swal from 'sweetalert2';
+import { User } from "../../Interfaces/profileInterface";
 
-interface User {
-  _id: string;
-  username: string;
-  bio: string;
-  profilePicture: string;
-  isPrivate: boolean;
-  followers: string[];
-  following: string[];
-  blockedUsers: string[];
-}
 
 const UserProfile: React.FC = () => {
   const { config } = useAuth();
@@ -35,20 +27,22 @@ const UserProfile: React.FC = () => {
       .then((res: AxiosResponse<User>) => {
         setUser(res.data);
         setLoading(false);
-        setIsBlocked(res.data.blockedUsers.includes(currentUserdata.user._id));
+        if (res.data.blockedMe.includes(currentUserdata.user._id)) {
+          setIsBlocked(true);
+        }
       })
       .catch((err) => {
         console.error(`API error: ${err.message}`);
         setLoading(false);
       });
-  }, [userId]);
+  }, [userId, currentUserdata.user._id]);
 
   const handleFollow = async () => {
     if (user) {
       const isFollowing = user.followers.includes(currentUserdata.user._id);
       try {
         if (isFollowing) {
-          await Axios.put(`/auth/unfollow/${userId}`, {}, config);
+          await Axios.put(`/auth/unfollow/${userId}`);
           setUser({
             ...user,
             followers: user.followers.filter(
@@ -56,7 +50,7 @@ const UserProfile: React.FC = () => {
             ),
           });
         } else {
-          await Axios.put(`/auth/follow/${userId}`, {}, config);
+          await Axios.put(`/auth/follow/${userId}`);
           setUser({
             ...user,
             followers: [...user.followers, currentUserdata.user._id],
@@ -71,9 +65,11 @@ const UserProfile: React.FC = () => {
   const handleShowFollowers = async () => {
     setShowFollowers(true);
     try {
-      const response = await Axios.get(`/auth/getFollowers/${userId}`, {
-        headers: { Authorization: `Bearer ${config.headers.Authorization}` },
-      });
+      const response = await Axios.get(`/auth/getFollowers/${userId}`, 
+      //   {
+      //   headers: { Authorization: `Bearer ${config.headers.Authorization}` },
+      // }
+    );
       setFollowers(response.data);
     } catch (err) {
       console.error("Failed to fetch followers:", err);
@@ -83,9 +79,11 @@ const UserProfile: React.FC = () => {
   const handleShowFollowing = async () => {
     setShowFollowing(true);
     try {
-      const response = await Axios.get(`/auth/getFollowing/${userId}`, {
-        headers: { Authorization: `Bearer ${config.headers.Authorization}` },
-      });
+      const response = await Axios.get(`/auth/getFollowing/${userId}`, 
+      //   {
+      //   headers: { Authorization: `Bearer ${config.headers.Authorization}` },
+      // }
+    );
       setFollowing(response.data);
     } catch (err) {
       console.error("Failed to fetch following:", err);
@@ -98,21 +96,49 @@ const UserProfile: React.FC = () => {
   };
 
   const handleBlock = async () => {
-    try {
-      await Axios.put(`/auth/blockuser/${userId}`,{}, config);
-      setIsBlocked(true);
-    } catch (err: any) {
-      console.error(`API error: ${err.message}`);
-    }
+    Swal.fire({
+      title: "Are you sure?",
+      text: "Do you really want to block this user?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, block",
+      cancelButtonText: "No, cancel",
+      reverseButtons: true,
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await Axios.put(`/auth/blockuser/${userId}`);
+          setIsBlocked(true);
+          Swal.fire("Blocked!", "The user has been blocked.", "success");
+        } catch (err: any) {
+          console.error(`API error: ${err.message}`);
+          Swal.fire("Error!", "Failed to block the user.", "error");
+        }
+      }
+    });
   };
 
   const handleUnblock = async () => {
-    try {
-      await Axios.put(`/auth/unblock/${userId}`, {}, config);
-      setIsBlocked(false);
-    } catch (err: any) {
-      console.error(`API error: ${err.message}`);
-    }
+    Swal.fire({
+      title: "Are you sure?",
+      text: "Do you really want to unblock this user?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, unblock",
+      cancelButtonText: "No, cancel",
+      reverseButtons: true,
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await Axios.put(`/auth/unblockuser/${userId}`);
+          setIsBlocked(false);
+          Swal.fire("Unblocked!", "The user has been unblocked.", "success");
+        } catch (err: any) {
+          console.error(`API error: ${err.message}`);
+          Swal.fire("Error!", "Failed to unblock the user.", "error");
+        }
+      }
+    });
   };
 
   if (loading) return <div>Loading...</div>;

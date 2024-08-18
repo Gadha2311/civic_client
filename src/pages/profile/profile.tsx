@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useEffect, useState } from "react";
+import React, { ChangeEvent, useEffect, useState  } from "react";
 import "./profile.css";
 import Sidebar from "../../components/sidebar/sidebar";
 import Navbar from "../../components/navbar/navbar";
@@ -21,17 +21,15 @@ const ProfilePicture: React.FC = () => {
   const [isPrivate, setIsPrivate] = useState<boolean>(false);
   const [showFollowers, setShowFollowers] = useState(false);
   const [showFollowing, setShowFollowing] = useState(false);
-  const [followers, setFollowers] = useState([]);
-  const [following, setFollowing] = useState([]);
+  const [followers, setFollowers] = useState<any[]>([]);
+  const [following, setFollowing] = useState<any[]>([]);
   const { userdata, token, setUserdata } = useAuth();
 
   const location = useLocation();
   const navigate = useNavigate();
 
   useEffect(() => {
-    const storedUserdata = JSON.parse(
-      localStorage.getItem("user_data") || "{}"
-    );
+    const storedUserdata = JSON.parse(localStorage.getItem("user_data") || "{}");
     console.log(storedUserdata);
 
     if (!storedUserdata.user || !storedUserdata.userToken) {
@@ -40,6 +38,7 @@ const ProfilePicture: React.FC = () => {
     }
 
     setUserdata(storedUserdata.user);
+
     if (location.pathname === "/profile") {
       navigate(location.pathname, { replace: true });
     }
@@ -48,7 +47,7 @@ const ProfilePicture: React.FC = () => {
   }, [location.pathname, navigate, setUserdata]);
 
   const handleEditClick = () => {
-    setShowEditOptions(true);
+    setShowEditOptions(prev=>!prev);
   };
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -63,11 +62,9 @@ const ProfilePicture: React.FC = () => {
       };
     }
   };
-  
 
   const handleSelectImage = () => {
     const fileInput = document.getElementById("fileInput") as HTMLInputElement;
-    
     fileInput.click();
   };
 
@@ -76,21 +73,16 @@ const ProfilePicture: React.FC = () => {
       setUploading(true);
       try {
         const formData = new FormData();
-        
         formData.append("img", selectedFile);
 
         const config = {
           headers: {
             "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${token}`,
+            // Authorization: `Bearer ${token}`,
           },
         };
 
-        const response = await Axios.post(
-          "/auth/uploadProfilePicture",
-          formData,
-          config
-        );
+        const response = await Axios.post("/auth/uploadProfilePicture", formData, config);
         console.log("Upload response:", response);
 
         const updatedUser = {
@@ -99,11 +91,7 @@ const ProfilePicture: React.FC = () => {
         };
 
         setUserdata(updatedUser);
-        localStorage.setItem(
-          "user_data",
-          JSON.stringify({ userToken: token, user: updatedUser })
-        );
-
+        localStorage.setItem("user_data", JSON.stringify({ userToken: token, user: updatedUser }));
         setUploading(false);
       } catch (err) {
         console.error("Upload error:", err);
@@ -116,9 +104,7 @@ const ProfilePicture: React.FC = () => {
     try {
       const result = await Swal.fire({
         title: "Are you sure?",
-        text: `Do you want to make your account ${
-          newIsPrivate ? "private" : "public"
-        }?`,
+        text: `Do you want to make your account ${newIsPrivate ? "private" : "public"}?`,
         icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
@@ -127,40 +113,21 @@ const ProfilePicture: React.FC = () => {
       });
 
       if (result.isConfirmed) {
-        const headers = {
-          Authorization: `Bearer ${token}`,
-        };
+        // const headers = {
+        //   Authorization: `Bearer ${token}`,
+        // };
 
-        const response = await Axios.patch(
-          "/auth/updatestatus",
-          { isPrivate: newIsPrivate },
-          { headers }
-        );
-
+        const response = await Axios.patch("/auth/updatestatus", { isPrivate: newIsPrivate });
         const updatedUser = response.data;
         setIsPrivate(updatedUser.isPrivate);
-        userdata.isPrivate = updatedUser.isPrivate;
         setUserdata(updatedUser);
-        localStorage.setItem(
-          "user_data",
-          JSON.stringify({ userToken: token, user: updatedUser })
-        );
+        localStorage.setItem("user_data", JSON.stringify({ userToken: token, user: updatedUser }));
 
-        Swal.fire(
-          "Updated!",
-          ` Your account has been ${
-            newIsPrivate ? "made private" : "made public"
-          }.`,
-          "success"
-        );
+        Swal.fire("Updated!", `Your account has been ${newIsPrivate ? "made private" : "made public"}.`, "success");
       }
     } catch (err) {
       console.error(err);
-      Swal.fire(
-        "Error!",
-        "There was an error updating your privacy status. Please try again later.",
-        "error"
-      );
+      Swal.fire("Error!", "There was an error updating your privacy status. Please try again later.", "error");
     }
   };
 
@@ -175,9 +142,11 @@ const ProfilePicture: React.FC = () => {
   const handleShowFollowers = async () => {
     setShowFollowers(true);
     try {
-      const response = await Axios.get(`/auth/getFollowers/${userdata._id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await Axios.get(`/auth/getFollowers/${userdata._id}`, 
+      //   {
+      //   headers: { Authorization: `Bearer ${token}` },
+      // }
+    );
       setFollowers(response.data);
     } catch (err) {
       console.error("Failed to fetch followers:", err);
@@ -187,9 +156,11 @@ const ProfilePicture: React.FC = () => {
   const handleShowFollowing = async () => {
     setShowFollowing(true);
     try {
-      const response = await Axios.get(`/auth/getFollowing/${userdata._id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await Axios.get(`/auth/getFollowing/${userdata._id}`, 
+      //   {
+      //   headers: { Authorization: `Bearer ${token}` },
+      // }
+    );
       setFollowing(response.data);
     } catch (err) {
       console.error("Failed to fetch following:", err);
@@ -240,13 +211,13 @@ const ProfilePicture: React.FC = () => {
           <div className="details">
             <div className="followers">
               <a href="#" onClick={handleShowFollowers}>
-                <span className="count">{userdata.followers.length}</span>
+                <span className="count">{(userdata.followers || []).length}</span>
                 <span className="label">FOLLOWERS</span>
               </a>
             </div>
             <div className="following">
               <a href="#" onClick={handleShowFollowing}>
-                <span className="count">{userdata.following.length}</span>
+                <span className="count">{(userdata.following || []).length}</span>
                 <span className="label">FOLLOWING</span>
               </a>
             </div>
@@ -267,21 +238,20 @@ const ProfilePicture: React.FC = () => {
             </span>
             <h2>{showFollowers ? "Followers" : "Following"}</h2>
             <ul>
-              {(showFollowers ? followers : following).map(
-                (user: any) => (
-                  <li key={user.id}>
-                    <img src={user.profilePicture} alt={user.username} />
-                    <span>{user.username}</span>
-                  </li>
-                )
-              )}
+              {(showFollowers ? followers : following).map((user: any) => (
+                <li key={user.id}>
+                  <img src={user.profilePicture} alt={user.username} />
+                  <span>{user.username}</span>
+                </li>
+              ))}
             </ul>
           </div>
         </div>
       )}
+
       <div className="users-posts">
-            <Post />
-          </div>
+        <Post />
+      </div>
     </div>
   );
 };

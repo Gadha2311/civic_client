@@ -3,18 +3,7 @@ import Axios from "../axios";
 import { useNavigate } from "react-router-dom";
 import { message } from "antd";
 import { useAuth } from "../context/AuthContext";
-
-interface LoginValues {
-  email: string;
-  password: string;
-}
-
-interface UseLoginReturn {
-  loading: boolean;
-  error: string | null;
-  LoginUser: (values: LoginValues) => Promise<void>; 
-  sendResetEmail: (email: string) => Promise<void>;
-}
+import { LoginValues, UseLoginReturn } from "../Interfaces/userInterface";
 
 const useLogin = (): UseLoginReturn => {
   const { login } = useAuth();
@@ -24,7 +13,7 @@ const useLogin = (): UseLoginReturn => {
 
   const validateLogin = (values: LoginValues): boolean => {
     const { email, password } = values;
-    const regex = /^[^\s,]+$/; 
+    const regex = /^[^\s,]+$/;
 
     if (!regex.test(email)) {
       setError("Email cannot contain spaces or commas.");
@@ -76,16 +65,16 @@ const useLogin = (): UseLoginReturn => {
       return;
     }
     try {
-      const response = await Axios.post('/auth/forgot-password', { email });
-      message.success(response.data.message || 'Recovery email sent');
-    } catch (error : any) {
+      const response = await Axios.post("/auth/forgot-password", { email });
+      message.success(response.data.message || "Recovery email sent");
+    } catch (error: any) {
       const errorMessage = error.response?.data?.message || "An error occurred";
       message.error(errorMessage);
       throw new Error(errorMessage);
     }
   };
 
-  return { loading, error, LoginUser,sendResetEmail, };
+  return { loading, error, LoginUser, sendResetEmail };
 };
 
 export default useLogin;

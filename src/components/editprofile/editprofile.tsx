@@ -1,11 +1,9 @@
 import React, { ChangeEvent, useState } from "react";
 import Axios from "../../axios";
 import { useAuth } from "../../context/AuthContext";
+import { EditProfileFormProps } from "../../Interfaces/profileInterface";
 import "./editprofile.css";
 
-interface EditProfileFormProps {
-  closeForm: () => void;
-}
 
 const EditProfileForm: React.FC<EditProfileFormProps> = ({ closeForm }) => {
   const { userdata, token, setUserdata } = useAuth();
@@ -25,9 +23,9 @@ const EditProfileForm: React.FC<EditProfileFormProps> = ({ closeForm }) => {
       const response = await Axios.put(
         "/auth/updateProfileDetails",
         { name: editData.name, bio: editData.bio },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        // {
+        //   headers: { Authorization: `Bearer ${token}` },
+        // }
       );
 
       const updatedUser = { ...userdata, ...response.data };

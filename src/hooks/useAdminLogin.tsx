@@ -3,17 +3,8 @@ import { message } from "antd";
 import Axios from "../axios";
 import { useNavigate } from "react-router-dom";
 import { useAdminAuth } from "../context/AdminAuthContext";
+import {  LoginValues, AdminLoginResponse } from "../Interfaces/adminInterface";
 
-interface LoginValues {
-  email: string;
-  password: string;
-}
-
-interface AdminLoginResponse {
-  message: string;
-  token: string;
-  user: any; 
-}
 
 const useAdminLogin = () => {
   const { Adminlogin } = useAdminAuth();

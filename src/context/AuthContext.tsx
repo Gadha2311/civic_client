@@ -3,23 +3,8 @@ import {
   useContext,
   useEffect,
   useState,
-  ReactNode,
 } from "react";
-
-interface AuthContextType {
-  token: string | null;
-  isAuthenticated: boolean;
-  userdata: any | null;
-  
-  login: (newToken: string, newData: any) => void;
-  logout: () => void;
-  setUserdata: (data: any) => void;
-  config: {
-    headers: {
-      Authorization: string;
-    };
-  };
-}
+import { AuthContextType, AuthProviderProps} from "../Interfaces/authInterface";
 
 const Authcontext = createContext<AuthContextType>({
   token: null,
@@ -35,9 +20,6 @@ const Authcontext = createContext<AuthContextType>({
   },
 });
 
-interface AuthProviderProps {
-  children: ReactNode;
-}
 
 export const Authprovider = ({ children }: AuthProviderProps) => {
   const [token, setToken] = useState<string | null>(null);

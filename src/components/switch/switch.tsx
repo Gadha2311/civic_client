@@ -1,10 +1,7 @@
 import React from "react";
+import { SwitchProps } from "../../Interfaces/profileInterface";
 import "./switch.css";
 
-interface SwitchProps {
-  isPrivate: boolean;
-  onChange: (isPrivate: boolean) => void;
-}
 
 const Switch: React.FC<SwitchProps> = ({ isPrivate, onChange }) => {
   return (

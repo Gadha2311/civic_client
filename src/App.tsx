@@ -14,10 +14,14 @@ import Home from "./pages/home/home";
 import ResetPassword from "./pages/resetpassword/resetpassword";
 import AdminLogin from "./admin/AdminLogin/adminLogin";
 import AdminUserlist from "./admin/AdminUserlist/adminUserlist";
+import ReportedPosts from "./admin/ReportedPost/reportedPost";
 import "./App.css";
 import Profile from "./pages/profile/profile";
 import Search from "./pages/search/search";
 import UserProfile from "./pages/userprofile/userprofile";
+import NotificationPage from "./pages/notification/notification";
+import ReportDetailsPage from "./admin/ReportTable/reportTable";
+import NotFound from "./pages/error/error";
 
 const queryClient = new QueryClient();
 
@@ -92,6 +96,14 @@ function App() {
               }
             />
             <Route
+            path="/notification"
+            element={
+              <ProtectedRoute>
+                <NotificationPage/>
+              </ProtectedRoute>
+            }
+            />
+            <Route
               path="/profile"
               element={
                 <ProtectedRoute>
@@ -99,6 +111,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route path="/404" element={<NotFound />} />
           </Routes>
           <AdminRoutes />
         </Router>
@@ -134,6 +147,17 @@ function AdminRoutes() {
           )
         }
       />
+      <Route
+      path="/reportedposts"
+      element={
+        isAdminAuthenticated ? (
+          <ReportedPosts/>
+        ) : (
+          <Navigate to= "/adminLogin"/>
+        )
+      }
+      />
+      <Route path="/reportdetails/:postId" element={isAdminAuthenticated ?(<ReportDetailsPage />):<Navigate to= "/adminLogin"/>} />
     </Routes>
   );
 }
