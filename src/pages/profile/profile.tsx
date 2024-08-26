@@ -77,10 +77,7 @@ const ProfilePicture: React.FC = () => {
 
         const config = {
           headers: {
-            "Content-Type": "multipart/form-data",
-            // Authorization: `Bearer ${token}`,
-          },
-        };
+            "Content-Type": "multipart/form-data"}};
 
         const response = await Axios.post("/auth/uploadProfilePicture", formData, config);
         console.log("Upload response:", response);
@@ -113,9 +110,6 @@ const ProfilePicture: React.FC = () => {
       });
 
       if (result.isConfirmed) {
-        // const headers = {
-        //   Authorization: `Bearer ${token}`,
-        // };
 
         const response = await Axios.patch("/auth/updatestatus", { isPrivate: newIsPrivate });
         const updatedUser = response.data;
@@ -142,11 +136,7 @@ const ProfilePicture: React.FC = () => {
   const handleShowFollowers = async () => {
     setShowFollowers(true);
     try {
-      const response = await Axios.get(`/auth/getFollowers/${userdata._id}`, 
-      //   {
-      //   headers: { Authorization: `Bearer ${token}` },
-      // }
-    );
+      const response = await Axios.get(`/auth/getFollowers/${userdata._id}`);
       setFollowers(response.data);
     } catch (err) {
       console.error("Failed to fetch followers:", err);
@@ -156,11 +146,7 @@ const ProfilePicture: React.FC = () => {
   const handleShowFollowing = async () => {
     setShowFollowing(true);
     try {
-      const response = await Axios.get(`/auth/getFollowing/${userdata._id}`, 
-      //   {
-      //   headers: { Authorization: `Bearer ${token}` },
-      // }
-    );
+      const response = await Axios.get(`/auth/getFollowing/${userdata._id}`);
       setFollowing(response.data);
     } catch (err) {
       console.error("Failed to fetch following:", err);

@@ -72,10 +72,7 @@ const AddPost: React.FC<AddPostProps> = ({ onPostAdded }) => {
       try {
         const config = {
           headers: {
-            "Content-Type": "multipart/form-data",
-            // Authorization: `Bearer ${token}`,
-          },
-        };
+            "Content-Type": "multipart/form-data"}};
 
         const formData = new FormData();
         formData.append("desc", desc);

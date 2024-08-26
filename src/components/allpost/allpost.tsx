@@ -4,6 +4,7 @@ import React, {
   MouseEvent,
   ChangeEvent,
   FormEvent,
+  useContext,
 } from "react";
 import { useAuth } from "../../context/AuthContext";
 import Axios from "../../axios";
@@ -45,6 +46,7 @@ import {
   AuthContextType,
   AnchorEl,
 } from "../../Interfaces/postInterface";
+import { SocketContext } from "../../context/socket";
 
 const FollowedPosts: React.FC = () => {
   const { token, userdata } = useAuth() as AuthContextType;
@@ -65,12 +67,14 @@ const FollowedPosts: React.FC = () => {
   const [newComment, setNewComment] = useState<string>("");
   const [commentingPostId, setCommentingPostId] = useState<string | null>(null);
   const [showComments, setShowComments] = useState<Record<string, boolean>>({});
+  const { socket } = useContext(SocketContext);
 
   useEffect(() => {
     const fetchFollowedPosts = async () => {
       try {
         const response = await Axios.get(
-          `/auth/getTimelinePost/${userdata._id}`);
+          `/auth/getTimelinePost/${userdata._id}`
+        );
 
         const sortedPosts = response.data.sort(
           (a: Postinterface, b: Postinterface) =>
@@ -115,7 +119,8 @@ const FollowedPosts: React.FC = () => {
     try {
       const response = await Axios.put(`/auth/editpost/${postId}`, formData, {
         headers: {
-          "Content-Type": "multipart/form-data"},
+          "Content-Type": "multipart/form-data",
+        },
       });
       const updatedPost: Postinterface = response.data;
       setPosts((prevPosts) =>
@@ -161,10 +166,9 @@ const FollowedPosts: React.FC = () => {
   const handleLike = async (postId: string) => {
     setLoadingActions((prev) => ({ ...prev, [postId]: true }));
     try {
-      await Axios.post(
-        `/auth/likepost/${postId}`,
-        {},
-      );
+      const response = await Axios.post(`/auth/likepost/${postId}`, {});
+      console.log(response);
+      socket?.emit("liked post", response.data.notification);
       setPosts((prevPosts) =>
         prevPosts.map((post) =>
           post._id === postId
@@ -214,10 +218,7 @@ const FollowedPosts: React.FC = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await Axios.post(
-            `/auth/deleteimage/${postId}`,
-            { imageUrl }
-          );
+          await Axios.post(`/auth/deleteimage/${postId}`, { imageUrl });
           setPosts((prevPosts) =>
             prevPosts.map((post) =>
               post._id === postId
@@ -240,9 +241,9 @@ const FollowedPosts: React.FC = () => {
     if (!postIdToReport) return;
 
     try {
-      await Axios.post(
-        `/auth/reportpost/${postIdToReport}`,
-        { reason: reportReason }  );
+      await Axios.post(`/auth/reportpost/${postIdToReport}`, {
+        reason: reportReason,
+      });
       toast.success("Post reported successfully.");
       closeReportDialog();
     } catch (error) {
@@ -260,11 +261,12 @@ const FollowedPosts: React.FC = () => {
     if (!newComment.trim()) return;
 
     try {
-      const response = await Axios.post(
-        `/auth/commentpost/${postId}`,
-        { text: newComment });
-
-      const addedComment = response.data;
+      const response = await Axios.post(`/auth/commentpost/${postId}`, {
+        text: newComment,
+      });
+      socket?.emit("comment",response.data.notification)
+      const addedComment = response.data.post;
+      console.log(addedComment);
 
       setPosts((prevPosts) =>
         prevPosts.map((post) =>

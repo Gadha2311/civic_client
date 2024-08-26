@@ -45,4 +45,55 @@
   .btn:hover {
     background-color: transparent;
   }
-  
+  /* Add this to the existing CSS code */
+
+/* Mobile devices (max-width: 480px) */
+@media only screen and (max-width: 480px) {
+  .sidebar-container {
+    width: 100%;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    padding-top: 40px;
+  }
+  .sidebar-container ul {
+    padding-left: 10px;
+  }
+  .sidebar-container li {
+    padding: 10px;
+    font-size: 14px;
+  }
+}
+
+/* Tablets (max-width: 768px) */
+@media only screen and (max-width: 768px) {
+  .sidebar-container {
+    width: 150px;
+    height: calc(100% - 60px);
+    padding-top: 60px;
+  }
+  .sidebar-container ul {
+    padding-left: 20px;
+  }
+  .sidebar-container li {
+    padding: 12px;
+    font-size: 16px;
+  }
+}
+
+/* Desktops (min-width: 1024px) */
+@media only screen and (min-width: 1024px) {
+  .sidebar-container {
+    width: 200px;
+    height: calc(100% - 60px);
+    padding-top: 80px;
+  }
+  .sidebar-container ul {
+    padding-left: 30px;
+  }
+  .sidebar-container li {
+    padding: 15px 20px;
+    font-size: 18px;
+  }
+}

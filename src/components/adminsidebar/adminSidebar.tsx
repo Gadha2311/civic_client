@@ -16,13 +16,11 @@ const Sidebar: React.FC<SidebarProps> = () => {
   const { Adminlogout } = useAdminAuth();
   const navigate = useNavigate();
 
-  // logout
   const handleLogout = () => {
     Adminlogout();
     navigate("/adminLogin");
   };
 
-  // redirect to user listing page
   const handleUser = () => {
     navigate("/userlist");
   };

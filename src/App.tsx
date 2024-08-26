@@ -4,9 +4,9 @@ import {
   Routes,
   Navigate,
 } from "react-router-dom";
-import { ReactNode } from "react";
+import { ReactNode, useContext, useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useAuth } from "./context/AuthContext";
+import { Authprovider, useAuth } from "./context/AuthContext";
 import { AdminAuthProvider, useAdminAuth } from "./context/AdminAuthContext";
 import Sidebar from "./components/adminsidebar/adminSidebar";
 import Login from "./pages/login/login";
@@ -22,101 +22,121 @@ import UserProfile from "./pages/userprofile/userprofile";
 import NotificationPage from "./pages/notification/notification";
 import ReportDetailsPage from "./admin/ReportTable/reportTable";
 import NotFound from "./pages/error/error";
-
+import Chat from "./pages/chat/chat";
+import { SocketContext, SocketProvider } from "./context/socket";
 const queryClient = new QueryClient();
 
 function App() {
+  // const {socket}=useContext(SocketContext)
+  // useEffect(()=>{
+  //   socket?.emit("connection")
+  // },[]
+  // )
   return (
-    <AdminAuthProvider>
-      <QueryClientProvider client={queryClient}>
-        <Router>
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <AuthRoute>
-                  <Login />
-                </AuthRoute>
-              }
-            />
-            <Route
-              path="/login"
-              element={
-                <AuthRoute>
-                  <Login />
-                </AuthRoute>
-              }
-            />
-            <Route
-              path="/signup"
-              element={
-                <AuthRoute>
-                  <Login />
-                </AuthRoute>
-              }
-            />
-            <Route
-              path="/home"
-              element={
-                <ProtectedRoute>
-                  <Home />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/forgot-password"
-              element={
-                <AuthRoute>
-                  <Login />
-                </AuthRoute>
-              }
-            />
-            <Route
-              path="/reset-password/:token"
-              element={
-                <AuthRoute>
-                  <ResetPassword />
-                </AuthRoute>
-              }
-            />
-            <Route
-              path="/search"
-              element={
-                <ProtectedRoute>
-                  <Search />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/user/:userId"
-              element={
-                <ProtectedRoute>
-                  <UserProfile />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-            path="/notification"
-            element={
-              <ProtectedRoute>
-                <NotificationPage/>
-              </ProtectedRoute>
-            }
-            />
-            <Route
-              path="/profile"
-              element={
-                <ProtectedRoute>
-                  <Profile />
-                </ProtectedRoute>
-              }
-            />
-            <Route path="/404" element={<NotFound />} />
-          </Routes>
-          <AdminRoutes />
-        </Router>
-      </QueryClientProvider>
-    </AdminAuthProvider>
+    <SocketProvider>
+    <Authprovider>
+      
+        <AdminAuthProvider>
+          <QueryClientProvider client={queryClient}>
+            <Router>
+              <Routes>
+                <Route
+                  path="/"
+                  element={
+                    <AuthRoute>
+                      <Login />
+                    </AuthRoute>
+                  }
+                />
+                <Route
+                  path="/login"
+                  element={
+                    <AuthRoute>
+                      <Login />
+                    </AuthRoute>
+                  }
+                />
+                <Route
+                  path="/signup"
+                  element={
+                    <AuthRoute>
+                      <Login />
+                    </AuthRoute>
+                  }
+                />
+                <Route
+                  path="/home"
+                  element={
+                    <ProtectedRoute>
+                      <Home />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/forgot-password"
+                  element={
+                    <AuthRoute>
+                      <Login />
+                    </AuthRoute>
+                  }
+                />
+                <Route
+                  path="/reset-password/:token"
+                  element={
+                    <AuthRoute>
+                      <ResetPassword />
+                    </AuthRoute>
+                  }
+                />
+                <Route
+                  path="/search"
+                  element={
+                    <ProtectedRoute>
+                      <Search />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/user/:userId"
+                  element={
+                    <ProtectedRoute>
+                      <UserProfile />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/notification"
+                  element={
+                    <ProtectedRoute>
+                      <NotificationPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/profile"
+                  element={
+                    <ProtectedRoute>
+                      <Profile />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/chat"
+                  element={
+                    <ProtectedRoute>
+                      <Chat />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route path="/404" element={<NotFound />} />
+              </Routes>
+              <AdminRoutes />
+            </Router>
+          </QueryClientProvider>
+        </AdminAuthProvider>
+     
+    </Authprovider>
+    </SocketProvider>
   );
 }
 
@@ -148,16 +168,25 @@ function AdminRoutes() {
         }
       />
       <Route
-      path="/reportedposts"
-      element={
-        isAdminAuthenticated ? (
-          <ReportedPosts/>
-        ) : (
-          <Navigate to= "/adminLogin"/>
-        )
-      }
+        path="/reportedposts"
+        element={
+          isAdminAuthenticated ? (
+            <ReportedPosts />
+          ) : (
+            <Navigate to="/adminLogin" />
+          )
+        }
       />
-      <Route path="/reportdetails/:postId" element={isAdminAuthenticated ?(<ReportDetailsPage />):<Navigate to= "/adminLogin"/>} />
+      <Route
+        path="/reportdetails/:postId"
+        element={
+          isAdminAuthenticated ? (
+            <ReportDetailsPage />
+          ) : (
+            <Navigate to="/adminLogin" />
+          )
+        }
+      />
     </Routes>
   );
 }

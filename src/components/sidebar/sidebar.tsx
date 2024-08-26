@@ -31,6 +31,9 @@ const Sidebar = () => {
   const handleNotification = () =>{
     navigate("/notification")
   }
+  const handleChat=()=>{
+    navigate("/chat")
+  }
   return (
     <div className="sidebar-container">
       <ul>
@@ -57,7 +60,7 @@ const Sidebar = () => {
           </li>
         </p>
         <p>
-          <li>
+          <li onClick={handleChat}>
             <FontAwesomeIcon icon={faEnvelope} /> Messages
           </li>
         </p>

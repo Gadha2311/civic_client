@@ -1,4 +1,3 @@
-//////profile////
 
  export interface User {
     _id: string;
@@ -8,6 +7,7 @@
     profilePicture: string;
     isPrivate: boolean;
     followers: string[];
+    requests: string[];
     following: string[];
     blockedMe: string[];
     blocked: boolean;

@@ -3,7 +3,7 @@
   background-color: themed("bg");
   color: themed("textColor");
   margin-bottom: -200px;
-  padding: 20px;
+  padding: 40px;
 
   .homecontainer {
     position: relative;
@@ -132,6 +132,163 @@
         left: 50px;
         z-index: 1000;
       }
+    }
+  }
+  @media only screen and (max-width: 900px) {
+    .homecontainer {
+      width: 90%;
+      height: 20vh;
+      top: -120px;
+      left: 20px;
+    }
+    .top {
+      flex-direction: column;
+    }
+    .left {
+      width: 100%;
+    }
+    .right {
+      flex: 0;
+    }
+    .file {
+      width: 30px;
+      height: 30px;
+    }
+    .img-container {
+      margin: 2px;
+    }
+    .remove-icon {
+      top: 2px;
+      right: 2px;
+      font-size: 14px;
+    }
+    .bottom {
+      flex-direction: column;
+    }
+    .left {
+      gap: 5px;
+    }
+    .item {
+      gap: 2px;
+    }
+    .right {
+      margin-left: 0;
+    }
+    button {
+      padding: 3px;
+      font-size: 12px;
+    }
+    .AddAPhotoIcon {
+      font-size: 18px;
+    }
+    .InsertEmoticonIcon {
+      font-size: 18px;
+    }
+    .emoji-picker {
+      width: 200px; /* adjust the width as needed */
+    }
+  }
+
+  /* Tablets (max-width: 768px) */
+  @media only screen and (max-width: 1060px) {
+    .homecontainer {
+      width: 80%;
+      height: 25vh;
+      top: -150px;
+      left: 30px;
+    }
+    .top {
+      flex-direction: row;
+    }
+    .left {
+      width: 70%;
+    }
+    .right {
+      flex: 1;
+    }
+    .file {
+      width: 40px;
+      height: 40px;
+    }
+    .img-container {
+      margin: 5px;
+    }
+    .remove-icon {
+      top: 5px;
+      right: 5px;
+      font-size: 16px;
+    }
+    .bottom {
+      flex-direction: row;
+    }
+    .left {
+      gap: 10px;
+    }
+    .item {
+      gap: 5px;
+    }
+    .right {
+      margin-left: 20px;
+    }
+    button {
+      padding: 5px;
+      font-size: 14px;
+    }
+    .AddAPhotoIcon {
+      font-size: 24px;
+    }
+    .InsertEmoticonIcon {
+      font-size: 24px;
+    }
+    .emoji-picker {
+      width: 300px; /* adjust the width as needed */
+    }
+  }
+
+  /* Desktops (min-width: 1024px) */
+  @media only screen and (min-width: 1800px) {
+    .homecontainer {
+      width: 70%;
+      height: 30vh;
+      top: -180px;
+      left: 40px;
+    }
+    .top {
+      flex-direction: row;
+    }
+    .left {
+      width: 60%;
+    }
+    .right {
+      flex: 1;
+    }
+    .file {
+      width: 50px;
+      height: 50px;
+    }
+    .img-container {
+      margin: 10px;
+    }
+    .remove-icon {
+      top: 10px;
+      right: 10px;
+      font-size: 18px;
+    }
+    .bottom {
+      flex-direction: row;
+    }
+    .left {
+      gap: 15px;
+    }
+    .item {
+      gap: 10px;
+    }
+    .right {
+      margin-left: 30px;
+    }
+    button {
+      padding: 10px;
+      font-size: 16px;
     }
   }
 }

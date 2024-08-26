@@ -64,13 +64,7 @@ const Post: React.FC = () => {
   const fetchUserPosts = async () => {
     try {
       const response = await Axios.get(
-        `/auth/posts/${userdata._id}`
-        //   {
-        //   headers: {
-        //     Authorization: `Bearer ${token}`,
-        //   },
-        // }
-      );
+        `/auth/posts/${userdata._id}`);
 
       const sortedPosts = response.data.sort(
         (a: Postinterface, b: Postinterface) =>
@@ -120,10 +114,7 @@ const Post: React.FC = () => {
     try {
       await Axios.put(`/auth/editpost/${postId}`, formData, {
         headers: {
-          "Content-Type": "multipart/form-data",
-          // Authorization: `Bearer ${token}`,
-        },
-      });
+          "Content-Type": "multipart/form-data",}});
       setEditPostId(null);
       const updatedPosts = posts.map((post) => {
         if (post._id === postId) {
@@ -150,13 +141,7 @@ const Post: React.FC = () => {
     setPosts(posts.filter((post) => post._id !== postIdToDelete));
     try {
       await Axios.delete(
-        `/auth/deletepost/${postIdToDelete}`
-        //   {
-        //   headers: {
-        //     Authorization: `Bearer ${token}`,
-        //   },
-        // }
-      );
+        `/auth/deletepost/${postIdToDelete}`);
       setDeleteDialogOpen(false);
       setPostIdToDelete(null);
       toast.success(`Post deleted successfully.`);
@@ -174,11 +159,7 @@ const Post: React.FC = () => {
     try {
       await Axios.post(
         `/auth/likepost/${postId}`,
-        {}
-        // {
-        //   headers: { Authorization: `Bearer ${token}` },
-        // }
-      );
+        {});
       setPosts((prevPosts) =>
         prevPosts.map((post) =>
           post._id === postId
@@ -209,13 +190,7 @@ const Post: React.FC = () => {
     try {
       const response = await Axios.post(
         `/auth/commentpost/${postId}`,
-        { text: newComment }
-        // {
-        //   headers: {
-        //     Authorization: `Bearer ${token}`,
-        //   },
-        // }
-      );
+        { text: newComment });
 
       const addedComment = response.data;
 
@@ -281,11 +256,7 @@ const Post: React.FC = () => {
         try {
           await Axios.post(
             `/auth/deleteimage/${postId}`,
-            { imageUrl }
-            // {
-            //   headers: { Authorization: `Bearer ${token}` },
-            // }
-          );
+            { imageUrl });
           console.log(`postId: ${postId}`);
 
           setPosts((prevPosts) =>

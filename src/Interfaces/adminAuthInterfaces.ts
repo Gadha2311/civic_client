@@ -1,4 +1,3 @@
-///// adminAuthInterfaces////
 
 import { ReactNode } from "react";
 

@@ -1,4 +1,3 @@
-////adminloin////
 
 export interface LoginValues {
     email: string;

@@ -4,7 +4,7 @@ import Axios from "../../axios";
 import { User } from "../../Interfaces/profileInterface";
 import { Postinterface } from "../../Interfaces/postInterface";
 import { useAdminAuth } from "../../context/AdminAuthContext";
-import Sidebar from "../../components/adminsidebar/adminSidebar"; // Adjust the import path as needed
+import Sidebar from "../../components/adminsidebar/adminSidebar";
 import "./reportTable.css";
 
 interface Report {

@@ -20,7 +20,6 @@ const UserTable: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [totalPages, setTotalPages] = useState<number>(1);
 
-  // Fetch users from API
   const fetchUsers = async () => {
     setLoading(true);
     try {

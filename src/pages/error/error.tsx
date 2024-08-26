@@ -6,7 +6,7 @@ const NotFound: React.FC = () => {
     <div className="error-container">
       <h1 className="error-title">404</h1>
       <p className="error-text">
-        Oops! Sembra che tu sia perso nel buio...{" "}
+        Oops! Something wrong happened...{" "}
         <span className="animate-blink">????</span>
       </p>
     </div>

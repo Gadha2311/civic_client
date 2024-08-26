@@ -9,9 +9,7 @@ const EditProfileForm: React.FC<EditProfileFormProps> = ({ closeForm }) => {
   const { userdata, token, setUserdata } = useAuth();
   const [editData, setEditData] = useState({
     name: userdata.username,
-    bio: userdata.bio,
-    // email: userdata.email,
-  });
+    bio: userdata.bio });
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -22,11 +20,7 @@ const EditProfileForm: React.FC<EditProfileFormProps> = ({ closeForm }) => {
     try {
       const response = await Axios.put(
         "/auth/updateProfileDetails",
-        { name: editData.name, bio: editData.bio },
-        // {
-        //   headers: { Authorization: `Bearer ${token}` },
-        // }
-      );
+        { name: editData.name, bio: editData.bio } );
 
       const updatedUser = { ...userdata, ...response.data };
       setUserdata(updatedUser);
@@ -62,17 +56,6 @@ const EditProfileForm: React.FC<EditProfileFormProps> = ({ closeForm }) => {
             onChange={handleInputChange}
           />
         </label>
-        {/* <label>
-          Email:
-          <input
-            type="email"
-            name="email"
-            value={editData.email}
-            onChange={handleInputChange}
-          />
-        </label> */}
-          
-        
         <button type="button" onClick={handleSaveChanges}>
           Save
         </button>

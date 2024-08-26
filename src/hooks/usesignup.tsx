@@ -44,7 +44,6 @@ const useSignup = (): UseSignupReturn => {
 
       if (res.status === 201) {
         message.success(data.message);
-        // login(data.token, data.user);
         Swal.fire({
           text: "A Verification mail has been sent to the registered email address.",
           timer: 3000,

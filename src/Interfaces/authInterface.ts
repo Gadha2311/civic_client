@@ -1,4 +1,3 @@
-////authinterface////
 
 import { ReactNode } from "react";
 

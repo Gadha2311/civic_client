@@ -31,10 +31,10 @@ Axios.interceptors.response.use(
     } else if (error.response?.status === 500) {
       console.error("Server error, please try again later.");
     }
-    else if (error.response?.status === 404) {
-      window.location.href = "/404"; 
-      console.error("Page not found, redirecting...");
-    }
+    // else if (error.response?.status === 404) {
+    //   window.location.href = "/404"; 
+    //   console.error("Page not found, redirecting...");
+    // }
     return Promise.reject(error);
   }
 );
