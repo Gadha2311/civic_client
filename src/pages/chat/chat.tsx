@@ -1,48 +1,99 @@
 import React, { useState, useEffect, useContext } from "react";
 import "./chat.css";
 import Axios from "../../axios";
+import EmojiPicker from "emoji-picker-react";
 import Navbar from "../../components/navbar/navbar";
 import Sidebar from "../../components/sidebar/sidebar";
+import GroupDetails from "../../components/groupDetails/groupDetails";
 import { SocketContext } from "../../context/socket";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPaperPlane, faImage } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faPaperPlane,
+  faUsers,
+  faSmile,
+  faEllipsisV,
+  faPaperclip,
+  faPhone,
+  faFile,
+} from "@fortawesome/free-solid-svg-icons";
+import Swal from "sweetalert2";
+import { useAuth } from "../../context/AuthContext";
+import {} from "module";
+import {} from "module";
+import { ZegoUIKitPrebuilt } from "@zegocloud/zego-uikit-prebuilt";
+import ZIM from "zego-zim-web";
 
+// get token
+function generateToken(tokenServerUrl: string, userID: string) {
+  return fetch(
+    `${tokenServerUrl}/access_token?userID=${userID}&expired_ts=70200`,
+    {
+      method: "GET",
+    }
+  ).then((res) => res.json());
+}
+
+export function getUrlParams(
+  url: string = window.location.href
+): URLSearchParams {
+  let urlStr = url.split("?")[1];
+  return new URLSearchParams(urlStr);
+}
 
 const Chat: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [chatUsers, setChatUsers] = useState<any[]>([]);
-  const [selectedUser, setSelectedUser] = useState<any>(null);
+  const [selectedChat, setSelectedChat] = useState<any>(null);
   const [messages, setMessages] = useState<any[]>([]);
   const [isSending, setIsSending] = useState(false);
   const [newMessage, setNewMessage] = useState<string>("");
   const [chatId, setChatId] = useState<string>("");
-  const [imageFile, setImageFile] = useState<File | null>(null); 
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [emoji, setEmoji] = useState<{ emoji: string } | null>(null);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [groupSearchTerm, setGroupSearchTerm] = useState("");
+  const [groupSearchResults, setGroupSearchResults] = useState<any[]>([]);
+  const [isCreatingGroup, setIsCreatingGroup] = useState(false);
+  const [groupName, setGroupName] = useState<string>("");
+  const [groupCreated, setGroupCreated] = useState(false);
+  const [groupParticipants, setGroupParticipants] = useState<any[]>([]);
+  const [showMoreOptions, setShowMoreOptions] = useState(false);
+  const [showDetailsDropdown, setShowDetailsDropdown] = useState(false);
+  const [showLeaveGroupDropdown, setShowLeaveGroupDropdown] = useState(false);
+  const [groupDetails, setGroupDetails] = useState<any>(null);
+  const [documentFile, setDocumentFile] = useState<File | null>(null);
+  const [isOpenCallModal, setIsOpenCallModal] = useState<boolean>(false);
+  const { userdata } = useAuth();
+  const currentUserId = userdata._id;
+  console.log(chatId);
+  console.log(selectedChat);
+  console.log(chatUsers);
 
   const { socket } = useContext(SocketContext);
 
   useEffect(() => {
-    const fetchChatUsers = async () => {
-      try {
-        const response = await Axios.get("/auth/getUserChats");
-        setChatUsers(response.data);
-      } catch (error) {
-        console.error("Error fetching chat users:", error);
-      }
-    };
-
-    fetchChatUsers();
-  }, []);
-
-  useEffect(() => {
-    if (selectedUser) {
+    if (selectedChat) {
       socket?.on("receiveMessage", (message) => {
         if (message.chatId === chatId) {
           setMessages((prevMessages) => [...prevMessages, message]);
         }
       });
     }
-  }, [selectedUser, chatId, socket]);
+  }, [selectedChat, chatId, socket]);
+
+  useEffect(() => {
+    fetchChatUsers();
+  }, [groupCreated]);
+
+  const fetchChatUsers = async () => {
+    try {
+      const response = await Axios.get("/auth/getUserChats");
+      setChatUsers(response.data);
+    } catch (error) {
+      console.error("Error fetching chat users:", error);
+    }
+  };
 
   const searchUsers = async () => {
     setSearchResults([]);
@@ -55,28 +106,40 @@ const Chat: React.FC = () => {
     }
   };
 
-  const handleUserClick = async (user: any) => {
+  const searchGroupParticipants = async () => {
+    setGroupSearchResults([]);
+
+    try {
+      const response = await Axios.get(`/auth/searchChat/${groupSearchTerm}`);
+      setGroupSearchResults(response.data);
+    } catch (error) {
+      console.error("Error searching users for group:", error);
+    }
+  };
+
+  const handleUserClick = async (chat: any) => {
     try {
       const response = await Axios.post("/auth/createOrGetChat", {
-        selectedUserId: user._id,
+        selectedUserId: chat._id,
       });
 
-      const chat = response.data;
-      setChatId(chat._id);
+      const chatData = response.data;
+      setChatId(chatData._id);
+      console.log(`chatId${chatId}`);
 
-      socket?.emit("JoinRoom", chat._id);
+      socket?.emit("JoinRoom", chatData._id);
 
-      const messagesResponse = await Axios.get(`/auth/chat/${chat._id}/messages`);
+      const messagesResponse = await Axios.get(`/auth/chat/${chatId}/messages`);
       setMessages(messagesResponse.data);
 
-      setSelectedUser(user);
+      setSelectedChat(chatData.isGroupChat ? chatData : chat);
     } catch (error) {
       console.error("Error creating or fetching chat:", error);
     }
   };
 
   const handleSendMessage = async () => {
-    if (newMessage.trim() === "" && !imageFile) return;
+    if (newMessage.trim() === "" && !imageFile && !documentFile) return;
 
     setIsSending(true);
 
@@ -88,11 +151,24 @@ const Chat: React.FC = () => {
       JSON.parse(localStorage.getItem("user_data") ?? "")?.user?._id
     );
 
+    formData.append("senderName", userdata?.username);
+
+    if (emoji) {
+      formData.append("emoji", emoji.emoji);
+    }
+
     if (imageFile) {
-      formData.append("image", imageFile); 
+      formData.append("image", imageFile);
+    }
+
+    if (documentFile) {
+      console.log("heyyy");
+
+      formData.append("document", documentFile);
     }
 
     try {
+      console.log("Sending message:", [...formData.entries()]);
       const response = await Axios.post("/auth/sendMessage", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -101,15 +177,188 @@ const Chat: React.FC = () => {
 
       const message = response.data;
       socket?.emit("sendMessage", message);
-
       setMessages((prevMessages) => [...prevMessages, message]);
       setNewMessage("");
-      setImageFile(null); // Clear the selected image
+      setImageFile(null);
+      setDocumentFile(null);
+      setEmoji(null);
     } catch (error) {
       console.error("Error sending message:", error);
     } finally {
       setIsSending(false);
     }
+  };
+
+  const handleCreateGroup = async () => {
+    if (groupName.trim() === "" || groupParticipants.length === 0) return;
+
+    try {
+      const response = await Axios.post("/auth/createGroupChat", {
+        groupName,
+        participants: groupParticipants.map((user) => user._id),
+      });
+
+      const groupChat = response.data;
+      setChatId(groupChat._id);
+      setSelectedChat(groupChat);
+      socket?.emit("JoinRoom", groupChat._id);
+
+      const messagesResponse = await Axios.get(
+        `/auth/chat/${groupChat._id}/messages`
+      );
+      setMessages(messagesResponse.data);
+      setGroupName("");
+      setGroupParticipants([]);
+      setIsCreatingGroup(false);
+
+      setGroupCreated((prev) => !prev);
+    } catch (error) {
+      console.error("Error creating group chat:", error);
+    }
+  };
+
+  const addParticipant = (user: any) => {
+    if (
+      !groupParticipants.some((participant) => participant._id === user._id)
+    ) {
+      setGroupParticipants([...groupParticipants, user]);
+    }
+  };
+
+  const getChatName = () => {
+    if (selectedChat?.groupName) {
+      return selectedChat.groupName || "Unnamed Group";
+    } else if (selectedChat) {
+      return selectedChat.username;
+    } else {
+      return "Select a chat";
+    }
+  };
+
+  const handleEmojiClick = (emoji: { emoji: string }) => {
+    setNewMessage(newMessage + emoji.emoji);
+    setShowEmojiPicker(false);
+  };
+
+  const handleMoreOptionsClick = () => {
+    setShowMoreOptions(!showMoreOptions);
+  };
+
+  useEffect(() => {
+    fetchGroupDetails();
+  }, []);
+  const fetchGroupDetails = async () => {
+    if (!selectedChat?._id) return;
+
+    try {
+      const response = await Axios.get(
+        `/auth/group/${selectedChat._id}/details`
+      );
+      if (response.status === 200) {
+        setGroupDetails(response.data);
+        console.log(response);
+        console.log(groupDetails);
+      } else {
+        console.error("Error fetching group details:", response.status);
+      }
+    } catch (error) {
+      console.error("Error fetching group details:", error);
+    }
+  };
+
+  const handleDetailsClick = () => {
+    if (showDetailsDropdown == false) {
+      setShowDetailsDropdown(true);
+      fetchGroupDetails();
+    } else {
+      setShowDetailsDropdown(false);
+    }
+  };
+
+  const handleLeaveGroupClick = () => {
+    if (selectedChat) {
+      Swal.fire({
+        title: "Are you sure you want to leave this group?",
+        text: "You will no longer be able to see messages or participate in this group.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, leave",
+        cancelButtonText: "Cancel",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          handleLeaveGroup();
+          setShowDetailsDropdown(false);
+          setShowDetailsDropdown(false);
+          setShowLeaveGroupDropdown(false);
+        }
+      });
+    }
+  };
+
+  const handleLeaveGroup = async () => {
+    if (!selectedChat?._id) return;
+
+    try {
+      const response = await Axios.delete(
+        `/auth/group/${selectedChat._id}/leave`
+      );
+
+      if (response.status === 200) {
+        const updatedChatUsers = chatUsers.filter(
+          (user) => user._id !== selectedChat._id
+        );
+        setChatUsers(updatedChatUsers);
+        setSelectedChat(null);
+      } else {
+        console.error("Error leaving group:", response.status);
+      }
+    } catch (error) {
+      console.error("Error leaving group:", error);
+    }
+  };
+  let zp: ZegoUIKitPrebuilt;
+
+  let myMeeting = async () => {
+    const userID = currentUserId;
+
+    const userName = userdata?.username;
+
+    // generate token
+    await generateToken("https://nextjs-token.vercel.app/api", userID).then(
+      (res) => {
+        const token = ZegoUIKitPrebuilt.generateKitTokenForProduction(
+          1484647939,
+          res.token,
+          chatId,
+          userID,
+          userName
+        );
+        // create instance object from token
+        zp = ZegoUIKitPrebuilt.create(token);
+        zp.addPlugins({ ZIM });
+      }
+    );
+  };
+
+  const invite = () => {
+    const targetUser = {
+      userID: selectedChat._id,
+      userName: "",
+    };
+    zp.sendCallInvitation({
+      callees: [targetUser],
+      callType: ZegoUIKitPrebuilt.InvitationTypeVoiceCall,
+      timeout: 60,
+      roomID: chatId,
+    })
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   return (
@@ -128,39 +377,44 @@ const Chat: React.FC = () => {
             🔍
           </button>
         </div>
-        <div className="chat-list">
-          {chatUsers.map((user) => (
-            <div
-              key={user._id}
-              className="chat-item"
-              onClick={() => handleUserClick(user)}
-            >
-              <img
-                src={user.profilePicture || "https://via.placeholder.com/50"}
-                alt={user.username}
-                className="chat-avatar"
-              />
-              <div className="chat-item-info">
-                <div className="chat-item-header">
-                  <span className="chat-item-name">{user.username}</span>
-                </div>
+        <div>
+          {searchResults.length > 0 ? (
+            searchResults.map((user) => (
+              <div key={user._id} onClick={() => handleUserClick(user)}>
+                <span>{user.username}</span>
               </div>
-            </div>
-          ))}
-          {searchResults.map((user) => (
+            ))
+          ) : (
+            <p>No results found</p>
+          )}
+        </div>
+        <button
+          className="create-group-btn"
+          onClick={() => setIsCreatingGroup(true)}
+        >
+          <FontAwesomeIcon icon={faUsers} /> Create Group
+        </button>
+        <div className="chat-list">
+          {chatUsers.map((chat) => (
             <div
-              key={user._id}
+              key={chat._id}
               className="chat-item"
-              onClick={() => handleUserClick(user)}
+              onClick={() => handleUserClick(chat)}
             >
               <img
-                src={user.profilePicture || "https://via.placeholder.com/50"}
-                alt={user.username}
+                src={
+                  chat.isGroupChat
+                    ? "https://via.placeholder.com/50"
+                    : chat.profilePicture || "https://via.placeholder.com/50"
+                }
+                alt={chat.groupName || chat.username}
                 className="chat-avatar"
               />
               <div className="chat-item-info">
                 <div className="chat-item-header">
-                  <span className="chat-item-name">{user.username}</span>
+                  <span className="chat-item-name">
+                    {chat.groupName || chat.username}
+                  </span>
                 </div>
               </div>
             </div>
@@ -170,8 +424,51 @@ const Chat: React.FC = () => {
 
       <div className="chat-content">
         <div className="chat-header">
-          <h2>{selectedUser ? selectedUser.username : "Select a user"}</h2>
+          <h2>{getChatName()}</h2>
+
+          <FontAwesomeIcon
+            icon={faPhone}
+            className="call-icon"
+            onClick={invite}
+          />
+
+          {selectedChat?.groupName && (
+            <FontAwesomeIcon
+              icon={faEllipsisV}
+              className="more-options-icon"
+              onClick={handleMoreOptionsClick}
+            />
+          )}
+
+          {showMoreOptions && (
+            <div className="more-options-menu">
+              <div className="dropdown">
+                <button
+                  className="dropdown-button"
+                  onClick={handleDetailsClick}
+                >
+                  Details
+                </button>
+                {showDetailsDropdown && groupDetails && (
+                  <div className="dropdown-content">
+                    <GroupDetails
+                      setShowDetails={setShowDetailsDropdown}
+                      groupDetails={groupDetails}
+                      currentUserId={currentUserId}
+                    />
+                  </div>
+                )}
+              </div>
+              <div className="dropdown" onClick={handleLeaveGroupClick}>
+                <button className="dropdown-button">Leave Group</button>
+                {showLeaveGroupDropdown && (
+                  <div className="dropdown-content"></div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
+
         <div className="chat-messages">
           {messages.map((msg, index) => (
             <div
@@ -183,42 +480,164 @@ const Chat: React.FC = () => {
                   : "incoming"
               }`}
             >
+              {selectedChat?.groupName && (
+                <span className="message-sender">{msg.senderName}</span>
+              )}
+
               <div className="message-bubble">
                 {msg.content && <p>{msg.content}</p>}
                 {msg.imageUrl && (
-                  <img
-                    src={msg.imageUrl}
-                    
-                    className="message-image"
-                  />
+                  <img src={msg.imageUrl} alt="" className="message-image" />
                 )}
               </div>
+              {/* < FontAwesomeIcon icon={faFile}/> */}
+              {msg.imageUrl?.length > 0 && (
+                <div className="document-links">
+                  {msg.imageUrl.map((doc: string, idx: number) => (
+                    <a
+                      key={idx}
+                      href={doc}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        window.open(doc, "_blank");
+                      }}
+                    >
+                      {/* View  */}
+                    </a>
+                  ))}
+                </div>
+              )}
             </div>
           ))}
         </div>
         <div className="chat-input">
-  <input
-    type="text"
-    placeholder="Your message"
-    value={newMessage}
-    onChange={(e) => setNewMessage(e.target.value)}
-  />
-  <label htmlFor="image-upload" className="image-upload-icon">
-    <FontAwesomeIcon icon={faImage} />
-  </label>
-  <input
-    type="file"
-    id="image-upload"
-    accept="image/*"
-    style={{ display: 'none' }}
-    onChange={(e) => setImageFile(e.target.files?.[0] || null)}
-  />
-  <button className="send-btn" onClick={handleSendMessage} disabled={isSending}>
-    <FontAwesomeIcon icon={faPaperPlane} /> Send
-  </button>
-</div>
+          <input
+            type="text"
+            placeholder="Your message"
+            value={newMessage}
+            onChange={(e) => setNewMessage(e.target.value)}
+          />
+          <button
+            className="emoji-btn"
+            onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+          >
+            <FontAwesomeIcon icon={faSmile} />
+          </button>
+          {showEmojiPicker && (
+            <div className="emoji-picker">
+              <EmojiPicker onEmojiClick={handleEmojiClick} />
+            </div>
+          )}
+          <label htmlFor="image-upload" className="image-upload-icon">
+            <FontAwesomeIcon icon={faPaperclip} />
+          </label>
+          <input
+            type="file"
+            id="image-upload"
+            style={{ display: "none" }}
+            onChange={(e) =>
+              setImageFile(e.target.files ? e.target.files[0] : null)
+            }
+          />
 
+          <button
+            className="send-btn"
+            onClick={handleSendMessage}
+            disabled={isSending}
+          >
+            <FontAwesomeIcon icon={faPaperPlane} />
+            {/* <EmojiPicker onEmojiClick={(emoji: { emoji: string }) => setEmoji(emoji)} /> */}
+          </button>
+        </div>
       </div>
+
+      {/* Group creation modal */}
+      {isCreatingGroup && (
+        <div className="group-creation-modal">
+          <div className="group-creation-content">
+            <h2>Create Group</h2>
+            <input
+              type="text"
+              placeholder="Group Name"
+              value={groupName}
+              onChange={(e) => setGroupName(e.target.value)}
+            />
+            <input
+              type="text"
+              placeholder="Search for participants"
+              value={groupSearchTerm}
+              onChange={(e) => setGroupSearchTerm(e.target.value)}
+            />
+            <button className="search-btn" onClick={searchGroupParticipants}>
+              🔍
+            </button>
+            <div className="search-results">
+              {groupSearchResults.map((user) => (
+                <div
+                  key={user._id}
+                  className="search-result-item"
+                  onClick={() => addParticipant(user)}
+                >
+                  <img
+                    src={
+                      user.profilePicture || "https://via.placeholder.com/50"
+                    }
+                    alt={user.username}
+                    className="search-result-avatar"
+                  />
+                  <div className="search-result-info">
+                    <span className="search-result-name">{user.username}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="group-participants">
+              {groupParticipants.map((user) => (
+                <div key={user._id} className="participant-item">
+                  <img
+                    src={
+                      user.profilePicture || "https://via.placeholder.com/50"
+                    }
+                    alt={user.username}
+                    className="participant-avatar"
+                  />
+                  <span className="participant-name">{user.username}</span>
+                </div>
+              ))}
+            </div>
+            <div className="group-creation-actions">
+              <button
+                className="cancel-btn"
+                onClick={() => setIsCreatingGroup(false)}
+              >
+                Cancel
+              </button>
+              <button className="create-btn" onClick={handleCreateGroup}>
+                Create Group
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {isOpenCallModal && (
+        <div
+          style={{
+            width: "100%",
+            height: "100%",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        ></div>
+      )}
+
+      <div
+        className="myCallContainer"
+        ref={myMeeting}
+        style={{ height: "100%", position: "absolute", zIndex: 1000 }}
+      ></div>
     </div>
   );
 };

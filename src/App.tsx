@@ -24,6 +24,7 @@ import ReportDetailsPage from "./admin/ReportTable/reportTable";
 import NotFound from "./pages/error/error";
 import Chat from "./pages/chat/chat";
 import { SocketContext, SocketProvider } from "./context/socket";
+import Dashboard from "./admin/AdminDashboard/admindashboard";
 const queryClient = new QueryClient();
 
 function App() {
@@ -154,7 +155,7 @@ function AdminRoutes() {
       <Route
         path="/dashbord"
         element={
-          isAdminAuthenticated ? <Sidebar /> : <Navigate to="/adminLogin" />
+          isAdminAuthenticated ? <Dashboard /> : <Navigate to="/adminLogin" />
         }
       />
       <Route

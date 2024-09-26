@@ -46,7 +46,7 @@ const SocketProvider = ({ children }: SocketContextProps) => {
 
     socketInstance.on("receiveMessage", (message) => {
       console.log("Message received:", message);
-      setAlertMessage(`New message from ${message.senderId}: ${message.content}`);
+      setAlertMessage(`New message from ${message.senderName}`);
     });
 
     return () => {

@@ -28,11 +28,13 @@ const Sidebar: React.FC<SidebarProps> = () => {
   const handleReport = () => {
     navigate("/reportedposts");
   };
-
+const handleDashboard =()=>{
+  navigate("/dashbord")
+}
   return (
     <div className="side-container">
       <ul>
-        <p>
+        <p onClick={handleDashboard}>
           <li>
             <FontAwesomeIcon icon={faHome} /> Home
           </li>
