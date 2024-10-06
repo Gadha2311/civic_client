@@ -394,7 +394,8 @@ const Post: React.FC = () => {
             <div className="comments-section">
               {post.comments?.map((comment) => (
                 <div key={comment._id} className="comment">
-                  <span className="comment-author">{comment.username}</span>
+                  <span className="comment-author">{comment.username} </span>
+                  
                   <p className="comment-text">{comment.text}</p>
                   <span className="comment-date">
                     {new Date(comment.createdAt).toLocaleDateString()}

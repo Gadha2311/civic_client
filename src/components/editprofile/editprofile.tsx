@@ -2,14 +2,14 @@ import React, { ChangeEvent, useState } from "react";
 import Axios from "../../axios";
 import { useAuth } from "../../context/AuthContext";
 import { EditProfileFormProps } from "../../Interfaces/profileInterface";
-import "./editprofile.css";
-
+import { Box, Button, TextField, Typography } from "@mui/material";
 
 const EditProfileForm: React.FC<EditProfileFormProps> = ({ closeForm }) => {
   const { userdata, token, setUserdata } = useAuth();
   const [editData, setEditData] = useState({
     name: userdata.username,
-    bio: userdata.bio });
+    bio: userdata.bio,
+  });
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -18,9 +18,10 @@ const EditProfileForm: React.FC<EditProfileFormProps> = ({ closeForm }) => {
 
   const handleSaveChanges = async () => {
     try {
-      const response = await Axios.put(
-        "/auth/updateProfileDetails",
-        { name: editData.name, bio: editData.bio } );
+      const response = await Axios.put("/auth/updateProfileDetails", {
+        name: editData.name,
+        bio: editData.bio,
+      });
 
       const updatedUser = { ...userdata, ...response.data };
       setUserdata(updatedUser);
@@ -35,35 +36,61 @@ const EditProfileForm: React.FC<EditProfileFormProps> = ({ closeForm }) => {
   };
 
   return (
-    <div className="edit-profile-form">
-      <h2>Edit Profile</h2>
+    <Box
+      sx={{
+        position: "fixed",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+        background: "white",
+        padding: 3,
+        boxShadow: 4,
+        borderRadius: 2,
+        zIndex: 1000,
+        width: 400,
+      }}
+    >
+      <Typography variant="h5" align="center" gutterBottom>
+        Edit Profile
+      </Typography>
       <form>
-        <label>
-          Name:
-          <input
-            type="text"
-            name="name"
-            value={editData.name}
-            onChange={handleInputChange}
-          />
-        </label>
-        <label>
-          Bio:
-          <input
-            type="text"
-            name="bio"
-            value={editData.bio}
-            onChange={handleInputChange}
-          />
-        </label>
-        <button type="button" onClick={handleSaveChanges}>
+        <TextField
+          label="Name"
+          name="name"
+          value={editData.name}
+          onChange={handleInputChange}
+          variant="outlined"
+          fullWidth
+          margin="normal"
+        />
+        <TextField
+          label="Bio"
+          name="bio"
+          value={editData.bio}
+          onChange={handleInputChange}
+          variant="outlined"
+          fullWidth
+          margin="normal"
+        />
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleSaveChanges}
+          fullWidth
+          sx={{ marginBottom: 1 }}
+        >
           Save
-        </button>
-        <button type="button" onClick={closeForm}>
+        </Button>
+        <Button
+          variant="outlined"
+          color="secondary"
+          onClick={closeForm}
+          fullWidth
+        >
           Cancel
-        </button>
+        </Button>
       </form>
-    </div>
+    </Box>
   );
 };
 

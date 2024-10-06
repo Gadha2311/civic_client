@@ -704,3 +704,148 @@
   font-size: 18px;
   color: #0056b3;
 }
+@media (max-width: 1024px) {
+  .chat-sidebar {
+    margin-left: 45px;
+    width: 35%;
+  }
+
+  .chat-content {
+    width: 65%;
+  }
+  .chat-app-container {
+    height: 90vh; 
+    margin-left: 80px;
+  }
+}
+
+@media (max-width: 768px) {
+
+  .chat-app-container {
+    flex-direction: row;
+    padding-top: 0;
+    height: 100vh;
+    margin-left: 40px;
+  }
+
+  .chat-sidebar {
+    width: 100%;
+    margin-left: 105px;
+
+    border-right: none;
+    border-bottom: 1px solid #ccc;
+  }
+
+  .chat-content {
+    margin-top: 50px;
+    width: 100%;
+    flex: 1;
+  }
+
+  .chat-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .chat-item-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .chat-avatar {
+    margin-bottom: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .chat-app-container {
+    flex-direction: row;
+    padding-top: 0;
+    height: auto;
+    margin-left: 0;
+    margin-right: 50px;
+  }
+
+  .chat-sidebar {
+    width: 100%;
+    margin-left: 1px;
+    border-right: none;
+    height: 100vh;
+    border-bottom: 1px solid #ccc;
+  }
+  .chat-content {
+    width: 40%;
+    flex: 1;
+    margin-top:50px;
+  }
+
+  .chat-item-name {
+    font-size: 14px;
+  }
+
+  .chat-item-last-message {
+    font-size: 12px;
+  }
+
+  .chat-header h2 {
+    font-size: 1.2em;
+  }
+
+  .message-bubble {
+    max-width: 80%;
+  }
+
+  .chat-input {
+    padding: 10px;
+  }
+
+  .chat-input input {
+    padding: 8px;
+    font-size: 14px;
+  }
+
+  .send-btn {
+    padding: 8px 15px;
+    font-size: 14px;
+  }
+  .chat-app-container{
+    height: 90vh;
+  }
+}
+
+@media (max-width: 320px) {
+  .chat-sidebar {
+    padding: 10px;
+  }
+
+  .chat-content {
+    padding: 10px;
+  }
+
+  .chat-item {
+    padding: 5px;
+  }
+
+  .chat-avatar {
+    width: 30px;
+    height: 30px;
+  }
+
+  .message-bubble {
+    max-width: 70%;
+  }
+
+  .chat-input {
+    padding: 5px;
+  }
+
+  .chat-input input {
+    padding: 5px;
+    font-size: 12px;
+  }
+
+  .send-btn {
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+}

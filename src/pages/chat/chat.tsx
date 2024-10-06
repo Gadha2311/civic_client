@@ -66,9 +66,7 @@ const Chat: React.FC = () => {
   const [isOpenCallModal, setIsOpenCallModal] = useState<boolean>(false);
   const { userdata } = useAuth();
   const currentUserId = userdata._id;
-  console.log(chatId);
-  console.log(selectedChat);
-  console.log(chatUsers);
+  console.log(messages);
 
   const { socket } = useContext(SocketContext);
 
@@ -162,8 +160,6 @@ const Chat: React.FC = () => {
     }
 
     if (documentFile) {
-      console.log("heyyy");
-
       formData.append("document", documentFile);
     }
 
@@ -486,32 +482,64 @@ const Chat: React.FC = () => {
 
               <div className="message-bubble">
                 {msg.content && <p>{msg.content}</p>}
-                {msg.imageUrl && (
-                  <img src={msg.imageUrl} alt="" className="message-image" />
-                )}
-              </div>
-              {/* < FontAwesomeIcon icon={faFile}/> */}
-              {msg.imageUrl?.length > 0 && (
-                <div className="document-links">
-                  {msg.imageUrl.map((doc: string, idx: number) => (
+                {msg.imageUrl &&
+                  !Array.isArray(msg.imageUrl) &&
+                  /\.(jpeg|jpg|png|gif)$/i.test(msg.imageUrl) && (
+                    <img src={msg.imageUrl} alt="" className="message-image" />
+                  )}
+                {msg.documentUrl &&
+                  /\.(pdf|docx?|pptx?)$/i.test(msg.documentUrl) && (
                     <a
-                      key={idx}
-                      href={doc}
+                      href={msg.documentUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        window.open(doc, "_blank");
+                      className="document-link"
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        color: "black", 
+                        textDecoration: "none",
+                        fontWeight: "bold", 
+                        margin: "2px 0", 
+                        fontSize:"10px"
                       }}
                     >
-                      {/* View  */}
+                      <FontAwesomeIcon icon={faFile} style={{fontSize: "34px", marginRight: "20px"}} />
+                      View Document
                     </a>
-                  ))}
-                </div>
-              )}
+                  )}
+                {Array.isArray(msg.imageUrl)
+                  ? msg.imageUrl.map((image: string, idx: number) => (
+                      <a
+                        key={idx}
+                        href={image}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {/\.(jpeg|jpg|png|gif)$/i.test(image) && (
+                          <img src={image} alt="" className="message-image" />
+                        )}
+                      </a>
+                    ))
+                  : msg.imageUrl &&
+                    /\.(jpeg|jpg|png|gif)$/i.test(msg.imageUrl) && (
+                      <a
+                        href={msg.imageUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <img
+                          src={msg.imageUrl}
+                          alt=""
+                          className="message-image"
+                        />
+                      </a>
+                    )}
+              </div>
             </div>
           ))}
         </div>
+
         <div className="chat-input">
           <input
             type="text"
@@ -537,9 +565,30 @@ const Chat: React.FC = () => {
             type="file"
             id="image-upload"
             style={{ display: "none" }}
-            onChange={(e) =>
-              setImageFile(e.target.files ? e.target.files[0] : null)
-            }
+            accept=".jpg,.jpeg,.png,.pdf,.doc,.docx"
+            onChange={(e) => {
+              const file = e.target.files ? e.target.files[0] : null;
+
+              if (file) {
+                const isImage = file.type.startsWith("image/");
+                const isDocument = [
+                  "application/pdf",
+                  "application/msword",
+                  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                ].includes(file.type);
+
+                if (isImage) {
+                  console.log("Selected file is an image.");
+                  setImageFile(file);
+                } else if (isDocument) {
+                  console.log("Selected file is a document.");
+                  setDocumentFile(file);
+                } else {
+                  console.log("Unsupported file type.");
+                  alert("Please select a valid image or document file.");
+                }
+              }
+            }}
           />
 
           <button
@@ -548,12 +597,10 @@ const Chat: React.FC = () => {
             disabled={isSending}
           >
             <FontAwesomeIcon icon={faPaperPlane} />
-            {/* <EmojiPicker onEmojiClick={(emoji: { emoji: string }) => setEmoji(emoji)} /> */}
           </button>
         </div>
       </div>
 
-      {/* Group creation modal */}
       {isCreatingGroup && (
         <div className="group-creation-modal">
           <div className="group-creation-content">

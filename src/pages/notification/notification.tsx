@@ -2,16 +2,25 @@ import React, { useEffect, useState, useContext } from "react";
 import Axios from "../../axios";
 import Navbar from "../../components/navbar/navbar";
 import Sidebar from "../../components/sidebar/sidebar";
-import { Avatar, List, ListItem, ListItemText, CircularProgress, Button } from "@mui/material";
+import {
+  Avatar,
+  List,
+  ListItem,
+  ListItemText,
+  CircularProgress,
+  Button,
+  Grid,
+  Typography,
+  Box,
+} from "@mui/material";
 import { SocketContext } from "../../context/socket";
-import "./notification.css";
 
 interface Notification {
   _id: string;
   content: string;
   createdAt: string;
   postImage?: string;
-  type?: string; 
+  type?: string;
 }
 
 const NotificationPage: React.FC = () => {
@@ -27,19 +36,15 @@ const NotificationPage: React.FC = () => {
         if (Array.isArray(response.data)) {
           setNotifications(response.data);
         } else {
-          console.error("Unexpected response data format:", response.data);
           setError("Unexpected response data format.");
           setNotifications([]);
         }
         setLoading(false);
       } catch (error) {
-        console.error("Error fetching notifications:", error);
         setError("Error fetching notifications.");
-        setNotifications([]);
         setLoading(false);
       }
     };
-
     fetchNotifications();
   }, []);
 
@@ -87,41 +92,81 @@ const NotificationPage: React.FC = () => {
   }
 
   return (
-    <div className="notification-container">
-      <Navbar />
-      <Sidebar />
-      <div className="notification-content">
-        {error && <p className="error-message">{error}</p>}
+    <Grid container sx={{ height: "90vh" }}>
+      <Grid item xs={12}>
+        <Navbar />
+      </Grid>
+      <Grid item xs={12} md={2} sx={{ display: { md: "block" } }}>
+        {/* Hide the Sidebar on small screens */}
+        <Sidebar />
+      </Grid>
+      <Grid item xs={12} md={10} sx={{ padding: { xs: 2, md: 5 } }}>
+        {error && (
+          <Typography color="error" variant="h6" align="center">
+            {error}
+          </Typography>
+        )}
         {notifications.length === 0 ? (
-          <div className="noNotification">No notifications.</div>
+          <Box display="flex" justifyContent="center" alignItems="center" sx={{ height: "100%" }}>
+            <Typography variant="h5" color="textSecondary">
+              No notifications.
+            </Typography>
+          </Box>
         ) : (
-          <List className="notification-list">
+          <List>
             {notifications.map((notification) => (
-              <ListItem key={notification._id} className="notification-item">
-                <Avatar className="notification-avatar">
+              <ListItem
+                key={notification._id}
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  borderBottom: "1px solid #ddd",
+                  padding: { xs: "10px", sm: "15px" }, // Smaller padding for phones
+                  flexDirection: { xs: "column", sm: "row" }, // Responsive direction
+                  "&:hover": {
+                    backgroundColor: "#f1f1f1",
+                  },
+                }}
+              >
+                <Avatar
+                  sx={{
+                    marginRight: { xs: 0, sm: "15px" },
+                    marginBottom: { xs: "10px", sm: 0 }, // Responsive margin
+                    backgroundColor: "#007bff",
+                    color: "#ffffff",
+                    width: { xs: 40, sm: 45 },
+                    height: { xs: 40, sm: 45 },
+                  }}
+                >
                   {notification.content[0]}
                 </Avatar>
                 <ListItemText
                   primary={notification.content}
                   secondary={
-                    <div className="notification-content">
-                      <span className="notification-time">
+                    <Box sx={{ display: "flex", flexDirection: "column" }}>
+                      <Typography sx={{ fontSize: "0.85em", color: "#6c757d" }}>
                         {new Date(notification.createdAt).toLocaleString()}
-                      </span>
+                      </Typography>
                       {notification.postImage && (
                         <img
                           src={notification.postImage}
                           alt="Post"
-                          className="notification-post-image"
+                          style={{
+                            width: "50px",
+                            height: "50px",
+                            objectFit: "cover",
+                            marginTop: "5px",
+                            borderRadius: "5px",
+                          }}
                         />
                       )}
                       {notification.type === "follow" && (
-                        <div className="follow-action-buttons">
+                        <Box mt={2}>
                           <Button
                             variant="contained"
                             color="primary"
                             onClick={() => handleApproveFollow(notification._id)}
-                            className="approve-button"
+                            sx={{ marginRight: 2, textTransform: "none" }}
                           >
                             Approve
                           </Button>
@@ -129,21 +174,21 @@ const NotificationPage: React.FC = () => {
                             variant="contained"
                             color="secondary"
                             onClick={() => handleDeclineFollow(notification._id)}
-                            className="decline-button"
+                            sx={{ textTransform: "none" }}
                           >
                             Decline
                           </Button>
-                        </div>
+                        </Box>
                       )}
-                    </div>
+                    </Box>
                   }
                 />
               </ListItem>
             ))}
           </List>
         )}
-      </div>
-    </div>
+      </Grid>
+    </Grid>
   );
 };
 

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
-import "./Addpost.css";
 import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
 import { useQueryClient } from "@tanstack/react-query";
 import Axios from "../../axios";
@@ -8,8 +7,14 @@ import InsertEmoticonIcon from "@mui/icons-material/InsertEmoticon";
 import EmojiPicker from "emoji-picker-react";
 import CloseIcon from "@mui/icons-material/Close";
 import { AddPostProps } from "../../Interfaces/postInterface";
-
-
+import {
+  Box,
+  Button,
+  Grid,
+  IconButton,
+  TextField,
+  CircularProgress,
+} from "@mui/material";
 
 const AddPost: React.FC<AddPostProps> = ({ onPostAdded }) => {
   const [desc, setDesc] = useState("");
@@ -72,7 +77,9 @@ const AddPost: React.FC<AddPostProps> = ({ onPostAdded }) => {
       try {
         const config = {
           headers: {
-            "Content-Type": "multipart/form-data"}};
+            "Content-Type": "multipart/form-data",
+          },
+        };
 
         const formData = new FormData();
         formData.append("desc", desc);
@@ -85,7 +92,7 @@ const AddPost: React.FC<AddPostProps> = ({ onPostAdded }) => {
         setDesc("");
         setImgs([]);
         setFiles([]);
-        onPostAdded(); 
+        onPostAdded();
         setUploading(false);
       } catch (err) {
         console.error(err);
@@ -99,75 +106,122 @@ const AddPost: React.FC<AddPostProps> = ({ onPostAdded }) => {
   };
 
   return (
-    <div className="share">
-      <div className="homecontainer">
-        <div className="top">
-          <div className="left">
-            <input
-              type="text"
-              placeholder={`What's on your mind ${userdata?.username}?`}
-              onChange={handleChange}
-              value={desc}
-              onKeyDown={handleKeyDown}
-            />
-          </div>
-          <div className="right">
-            {imgs.map((img, index) => (
-              <div key={index} className="img-container">
-                <CloseIcon
-                  className="remove-icon"
+    <Box
+      sx={{
+        boxShadow: 3,
+        borderRadius: 2,
+        p: 3,
+        paddingTop: "10px",
+        backgroundColor: "#e9f5ff",
+        width: "100%",
+        maxWidth: "768px",
+        margin: "auto",
+        marginLeft: "60px",
+        marginTop: "80px",
+        height: "auto", 
+        overflow: "hidden", 
+      }}
+    >
+      <Grid container spacing={2}>
+        <Grid item xs={12}>
+          <TextField
+            fullWidth
+            multiline
+            minRows={2.5}
+            placeholder={`What's on your mind, ${userdata?.username}?`}
+            variant="outlined"
+            value={desc}
+            onChange={handleChange}
+            onKeyDown={handleKeyDown}
+            sx={{ mb: 2 }}
+          />
+        </Grid>
+
+        <Grid item xs={12} container spacing={1} sx={{ flexWrap: "wrap" }}>
+          {imgs.map((img, index) => (
+            <Grid item key={index}>
+              <Box
+                sx={{
+                  position: "relative",
+                  width: 80,
+                  height: 80,
+                  overflow: "hidden",
+                  borderRadius: 2,
+                  border: "1px solid #ccc",
+                }}
+              >
+                <IconButton
+                  sx={{
+                    position: "absolute",
+                    top: -10,
+                    right: -10,
+                    color: "red",
+                  }}
                   onClick={() => handleRemoveImage(index)}
+                >
+                  <CloseIcon />
+                </IconButton>
+                <img
+                  src={img as string}
+                  alt="Selected"
+                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
                 />
-                <img className="file" alt="" src={img as string} />
-              </div>
-            ))}
-          </div>
-        </div>
-        <hr />
-        <div className="bottom">
-          <div className="left">
+              </Box>
+            </Grid>
+          ))}
+        </Grid>
+
+        <Grid item xs={12} container alignItems="center">
+          <Grid item>
             <input
               type="file"
-              name="img"
-              id="file"
-              style={{ display: "none" }}
               accept=".png, .jpeg, .jpg"
+              id="upload-file"
+              style={{ display: "none" }}
               onChange={handleFileChange}
               multiple
             />
-            <label htmlFor="file">
-              <div className="item">
-                <AddAPhotoIcon style={{ color: "grey" }} />
-                <span className="text-3xl font-bold ">Add Images</span>
-              </div>
+            <label htmlFor="upload-file">
+              <IconButton color="primary" component="span">
+                <AddAPhotoIcon />
+              </IconButton>
             </label>
-            <div className="item">
-              <InsertEmoticonIcon onClick={() => setEmojiOpen(!emojiOpen)} />
-              <span
-                style={{ color: "orange", fontSize: "12px", fontWeight: 600 }}
-              >
-                Feeling/Activity
-              </span>
-              {emojiOpen && (
-                <div className="emoji-picker">
-                  <EmojiPicker
-                    onEmojiClick={(e) => {
-                      setDesc((prev) => (prev ? prev + e.emoji : e.emoji));
-                      setEmojiOpen(false);
-                    }}
-                  />
-                </div>
-              )}
-            </div>
-          </div>
-          <div className="right">
-            <button onClick={handleUploadClick}>
+          </Grid>
+
+          <Grid item>
+            <IconButton
+              color="secondary"
+              onClick={() => setEmojiOpen(!emojiOpen)}
+            >
+              <InsertEmoticonIcon />
+            </IconButton>
+            {emojiOpen && (
+              <Box sx={{ position: "absolute", zIndex: 10 }}>
+                <EmojiPicker
+                  onEmojiClick={(e) => {
+                    setDesc((prev) => (prev ? prev + e.emoji : e.emoji));
+                    setEmojiOpen(false);
+                  }}
+                />
+              </Box>
+            )}
+          </Grid>
+
+          <Grid item xs container justifyContent="flex-end">
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleUploadClick}
+              disabled={uploading}
+              startIcon={uploading && <CircularProgress size={20} />}
+              sx={{ whiteSpace: "nowrap" }}
+            >
               {uploading ? "Uploading..." : "Post"}
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+            </Button>
+          </Grid>
+        </Grid>
+      </Grid>
+    </Box>
   );
 };
 

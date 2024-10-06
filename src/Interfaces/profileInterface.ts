@@ -16,3 +16,8 @@
   export interface EditProfileFormProps {
     closeForm: () => void;
   }
+
+  export interface SwitchProps{
+    isPrivate:boolean;
+    onChange: any;
+  }
