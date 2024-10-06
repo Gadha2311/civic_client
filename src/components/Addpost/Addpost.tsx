@@ -20,7 +20,7 @@ const AddPost: React.FC<AddPostProps> = ({ onPostAdded }) => {
   const [desc, setDesc] = useState("");
   const [imgs, setImgs] = useState<Array<string | ArrayBuffer>>([]);
   const [uploading, setUploading] = useState(false);
-  const { userdata, token } = useAuth();
+  const { userdata } = useAuth();
   const [emojiOpen, setEmojiOpen] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
 

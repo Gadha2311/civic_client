@@ -6,7 +6,7 @@ import { FormValues } from "../../Interfaces/adminInterface";
 
 
 const Form = () => {
-  const { loading, error, LoginAdmin } = useAdminLogin();
+  const {  LoginAdmin } = useAdminLogin();
   const [formValues, setFormValues] = useState<FormValues>({
     email: "",
     password: "",

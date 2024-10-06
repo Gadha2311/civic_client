@@ -150,6 +150,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 2;
 }
 
 .modal-content {
@@ -301,3 +302,4 @@
 .comments-list li span {
   margin-left: 5px;
 }
+

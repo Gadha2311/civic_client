@@ -41,7 +41,6 @@ import { Cloudinary } from "@cloudinary/url-gen";
 import Carousel from "react-material-ui-carousel";
 import Swal from "sweetalert2";
 import {
-  Comment,
   Postinterface,
   AuthContextType,
   AnchorEl,
@@ -294,7 +293,7 @@ const FollowedPosts: React.FC = () => {
   };
 
   const handleClick = (event: MouseEvent<HTMLElement>, postId: string) => {
-    setAnchorEl({ element: event.currentTarget, postId });
+    setAnchorEl({ element: event.currentTarget, postId, username:"" });
   };
 
   const handleClose = () => {

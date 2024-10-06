@@ -1,26 +1,16 @@
 import React, { useEffect, useState, ChangeEvent, FormEvent } from "react";
 import {
-  faEllipsisV,
-  faEdit,
-  faTrash,
+
   faThumbsUp,
   faCommentDots,
-  faTimes,
+
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  Menu,
-  MenuItem,
   IconButton,
   TextField,
   Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  Paper,
-  Avatar,
+
 } from "@mui/material";
 import { useParams } from "react-router-dom";
 import Axios from "../../axios";
@@ -28,14 +18,15 @@ import { AxiosResponse } from "axios";
 import "./userprofile.css";
 import Navbar from "../../components/navbar/navbar";
 import Sidebar from "../../components/sidebar/sidebar";
-import { useAuth } from "../../context/AuthContext";
+// import { useAuth } from "../../context/AuthContext";
 import Swal from "sweetalert2";
 import { User } from "../../Interfaces/profileInterface";
 import { Postinterface } from "../../Interfaces/postInterface";
 import Carousel from "react-material-ui-carousel";
+// import { color } from "@cloudinary/url-gen/qualifiers/background";
 
 const UserProfile: React.FC = () => {
-  const { config } = useAuth();
+  // const { config } = useAuth();
   const currentUserdata = JSON.parse(localStorage.getItem("user_data") || "{}");
   const { userId } = useParams<{ userId: string }>();
   const [user, setUser] = useState<User | null>(null);
@@ -48,7 +39,7 @@ const UserProfile: React.FC = () => {
   const [isBlocked, setIsBlocked] = useState(false);
   const [isRequestPending, SetIsRequestPending] = useState(false);
   const [newComment, setNewComment] = useState<string>("");
-  const [commentingPostId, setCommentingPostId] = useState<string | null>(null);
+  // const [commentingPostId, setCommentingPostId] = useState<string | null>(null);
   const [showComments, setShowComments] = useState<Record<string, boolean>>({});
   const [loadingActions, setLoadingActions] = useState<Record<string, boolean>>({});
 
@@ -365,6 +356,24 @@ const UserProfile: React.FC = () => {
             ))}
           </div>
         )}
+         {(showFollowers || showFollowing) && (
+        <div className="modal">
+          <div className="modal-content">
+            <span className="close" onClick={handleCloseModal} style={{color:"red", background:"white"}}>
+             X
+            </span>
+            <h2>{showFollowers ? "Followers" : "Following"}</h2>
+            <ul>
+              {(showFollowers ? followers : following).map((user) => (
+                <li key={user._id}>
+                  <img src={user.profilePicture} alt={user.username} />
+                  <span>{user.username}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      )}
       </div>
     </div>
   );

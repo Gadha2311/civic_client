@@ -12,7 +12,7 @@ import {
   ListItem,
   ListItemAvatar,
   ListItemText,
-  useTheme,
+
 } from "@mui/material";
 import { faEdit, faCamera } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -27,7 +27,7 @@ import { useAuth } from "../../context/AuthContext";
 
 const ProfilePicture: React.FC = () => {
   const [img, setImg] = useState<string | null>(null);
-  const [file, setFile] = useState<File | null>(null);
+  // const [file, setFile] = useState<File | null>(null);
   const [showEditOptions, setShowEditOptions] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -40,7 +40,7 @@ const ProfilePicture: React.FC = () => {
 
   const location = useLocation();
   const navigate = useNavigate();
-  const theme = useTheme();
+
 
   useEffect(() => {
     const storedUserdata = JSON.parse(localStorage.getItem("user_data") || "{}");
@@ -64,7 +64,7 @@ const ProfilePicture: React.FC = () => {
       reader.readAsDataURL(selectedFile);
       reader.onloadend = () => {
         setImg(reader.result as string);
-        setFile(selectedFile);
+        // setFile(selectedFile);
         handleUpload(selectedFile);
       };
     }

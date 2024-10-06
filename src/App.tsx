@@ -4,11 +4,11 @@ import {
   Routes,
   Navigate,
 } from "react-router-dom";
-import { ReactNode, useContext, useEffect } from "react";
+import { ReactNode, } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Authprovider, useAuth } from "./context/AuthContext";
 import { AdminAuthProvider, useAdminAuth } from "./context/AdminAuthContext";
-import Sidebar from "./components/adminsidebar/adminSidebar";
+// import Sidebar from "./components/adminsidebar/adminSidebar";
 import Login from "./pages/login/login";
 import Home from "./pages/home/home";
 import ResetPassword from "./pages/resetpassword/resetpassword";
@@ -23,7 +23,7 @@ import NotificationPage from "./pages/notification/notification";
 import ReportDetailsPage from "./admin/ReportTable/reportTable";
 import NotFound from "./pages/error/error";
 import Chat from "./pages/chat/chat";
-import { SocketContext, SocketProvider } from "./context/socket";
+import { SocketProvider } from "./context/socket";
 import Dashboard from "./admin/AdminDashboard/admindashboard";
 const queryClient = new QueryClient();
 
