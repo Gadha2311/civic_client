@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-     "installCommand": "npm install --legacy-peer-deps",
+    "installCommand": "npm install --legacy-peer-deps",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "start": "vite"
@@ -44,7 +44,7 @@
     "react-dom": "^18.3.1",
     "react-intersection-observer": "^9.13.0",
     "react-material-ui-carousel": "^3.4.2",
-    "react-native-device-info": "^13.0.0",
+    "react-native-device-info": "^11.1.0",
     "react-native-encrypted-storage": "^4.0.3",
     "react-native-keep-awake": "^4.0.0",
     "react-native-safe-area-context": "^4.11.0",
