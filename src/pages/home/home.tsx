@@ -1,5 +1,5 @@
 import "./home.css";
-import React, { useState, lazy} from "react";
+import { useState, lazy} from "react";
 import Sidebar from "../../components/sidebar/sidebar";
 import Navbar from "../../components/navbar/navbar";
 import AddPost from "../../components/Addpost/Addpost";

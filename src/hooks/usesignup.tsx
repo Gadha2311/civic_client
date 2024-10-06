@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useAuth } from "../context/AuthContext";
+// import { useAuth } from "../context/AuthContext";
 import { message } from "antd";
 import Axios from "../axios";
 import { useNavigate } from "react-router-dom";
@@ -7,7 +7,7 @@ import { SignupValues, UseSignupReturn } from "../Interfaces/userInterface";
 import Swal from "sweetalert2";
 
 const useSignup = (): UseSignupReturn => {
-  const { login } = useAuth();
+  // const { login } = useAuth();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean | null>(null);
   const navigate = useNavigate();

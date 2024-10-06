@@ -1,6 +1,6 @@
 import React from "react";
 import { SwitchProps } from "../../Interfaces/profileInterface";
-import { Switch as MuiSwitch, IconButton } from "@mui/material";
+import {  IconButton } from "@mui/material";
 import LockIcon from '@mui/icons-material/Lock';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 

@@ -11,7 +11,7 @@ const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const {
-    loading: signUpLoading,
+    // loading: signUpLoading,
     error: signUpError,
     registerUser,
   } = useSignup();

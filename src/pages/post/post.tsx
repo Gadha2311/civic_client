@@ -7,7 +7,7 @@ import React, {
 } from "react";
 import { useAuth } from "../../context/AuthContext";
 import {
-  Comment,
+
   Postinterface,
   AuthContextType,
   AnchorEl,
@@ -58,7 +58,7 @@ const Post: React.FC = () => {
     {}
   );
   const [newComment, setNewComment] = useState<string>("");
-  const [commentingPostId, setCommentingPostId] = useState<string | null>(null);
+  // const [commentingPostId, setCommentingPostId] = useState<string | null>(null);
   const [showComments, setShowComments] = useState<Record<string, boolean>>({});
 
   const fetchUserPosts = async () => {
@@ -220,7 +220,7 @@ const Post: React.FC = () => {
   };
 
   const handleClick = (event: MouseEvent<HTMLElement>, postId: string) => {
-    setAnchorEl({ element: event.currentTarget, postId });
+    setAnchorEl({ element: event.currentTarget, postId, username:"" });
   };
 
   const handleClose = () => {

@@ -63,7 +63,7 @@ const Chat: React.FC = () => {
   const [showLeaveGroupDropdown, setShowLeaveGroupDropdown] = useState(false);
   const [groupDetails, setGroupDetails] = useState<any>(null);
   const [documentFile, setDocumentFile] = useState<File | null>(null);
-  const [isOpenCallModal, setIsOpenCallModal] = useState<boolean>(false);
+  // const [isOpenCallModal, setIsOpenCallModal] = useState<boolean>(false);
   const { userdata } = useAuth();
   const currentUserId = userdata._id;
   console.log(messages);
@@ -668,7 +668,7 @@ const Chat: React.FC = () => {
           </div>
         </div>
       )}
-      {isOpenCallModal && (
+      {/* {isOpenCallModal && (
         <div
           style={{
             width: "100%",
@@ -678,7 +678,7 @@ const Chat: React.FC = () => {
             alignItems: "center",
           }}
         ></div>
-      )}
+      )} */}
 
       <div
         className="myCallContainer"
