@@ -1,21 +1,27 @@
 import React, { useEffect, useState, ChangeEvent, FormEvent } from "react";
-import {
-
-  faThumbsUp,
-  faCommentDots,
-
-} from "@fortawesome/free-solid-svg-icons";
+import { faThumbsUp, faCommentDots } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   IconButton,
   TextField,
   Button,
-
+  Container,
+  Grid,
+  Paper,
+  Typography,
+  Modal,
+  List,
+  ListItem,
+  ListItemAvatar,
+  Avatar,
+  Divider,
+  ListItemText,
+  useMediaQuery,
 } from "@mui/material";
 import { useParams } from "react-router-dom";
 import Axios from "../../axios";
 import { AxiosResponse } from "axios";
-import "./userprofile.css";
+// import "./userprofile.css";
 import Navbar from "../../components/navbar/navbar";
 import Sidebar from "../../components/sidebar/sidebar";
 // import { useAuth } from "../../context/AuthContext";
@@ -23,7 +29,6 @@ import Swal from "sweetalert2";
 import { User } from "../../Interfaces/profileInterface";
 import { Postinterface } from "../../Interfaces/postInterface";
 import Carousel from "react-material-ui-carousel";
-// import { color } from "@cloudinary/url-gen/qualifiers/background";
 
 const UserProfile: React.FC = () => {
   // const { config } = useAuth();
@@ -41,7 +46,12 @@ const UserProfile: React.FC = () => {
   const [newComment, setNewComment] = useState<string>("");
   // const [commentingPostId, setCommentingPostId] = useState<string | null>(null);
   const [showComments, setShowComments] = useState<Record<string, boolean>>({});
-  const [loadingActions, setLoadingActions] = useState<Record<string, boolean>>({});
+  const [loadingActions, setLoadingActions] = useState<Record<string, boolean>>(
+    {}
+  );
+  const isSmallScreen = useMediaQuery("(max-width: 650px)");
+  const isExtraSmallScreen = useMediaQuery("(max-width: 380px)");
+  const isTabScreen = useMediaQuery("(max-width: 1300px)");
 
   useEffect(() => {
     Axios.get(`/auth/users/${userId}`)
@@ -75,12 +85,18 @@ const UserProfile: React.FC = () => {
           await Axios.put(`/auth/unfollow/${userId}`);
           setUser({
             ...user,
-            followers: user.followers.filter((id) => id !== currentUserdata.user._id),
+            followers: user.followers.filter(
+              (id) => id !== currentUserdata.user._id
+            ),
           });
         } else if (isRequestPending) {
           await Axios.put(`/auth/cancelRequest/${userId}`);
           SetIsRequestPending(false);
-          Swal.fire("Request canceled.", "Your follow request has been canceled.", "info");
+          Swal.fire(
+            "Request canceled.",
+            "Your follow request has been canceled.",
+            "info"
+          );
         } else if (user.isPrivate) {
           await Axios.put(`/auth/follow/${userId}`);
           SetIsRequestPending(true);
@@ -237,146 +253,222 @@ const UserProfile: React.FC = () => {
   if (loading) return <div>Loading...</div>;
 
   return (
-    <div className="profilee">
+    <Container>
       <Navbar />
       <Sidebar />
-      <div className="user-profile">
-        <div className="profile-userpicture">
-          <img src={user?.profilePicture} alt={user?.username} />
-        </div>
+      <Grid
+        container
+        spacing={2}
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          marginTop: -40,
+          position: "absolute",
+          left:0
+        }}
+      >
+        <Grid
+          item
+          sx={{
+            maxWidth: isExtraSmallScreen
+              ? "70%"
+              : isSmallScreen
+              ? "80%"
+              : isTabScreen
+              ? "100%"
+              : "500px",
+            position: "relative",
+            marginLeft: isExtraSmallScreen
+              ? 10
+              : isSmallScreen
+              ? 9
+              : isTabScreen
+              ? 20
+              : 75,
+            marginTop: isExtraSmallScreen
+              ? 10
+              : isSmallScreen
+              ? -5
+              : isTabScreen
+              ? -20
+              : 0,
+          }}
+        >
+          <Paper elevation={3} style={{ padding: "40px" }}>
+            <img
+              src={user?.profilePicture}
+              alt={user?.username}
+              style={{ width: "40%", borderRadius: "50%" }}
+            />
+            <Typography variant="h5">{user?.username}</Typography>
+            <Typography variant="body1">{user?.bio}</Typography>
+            <div
+              className="udetails"
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                padding: 20,
+              }}
+            >
+              <Typography
+                variant="body2"
+                onClick={handleShowFollowers}
+                style={{ cursor: "pointer" }}
+              >
+                {user?.followers.length} FOLLOWERS
+              </Typography>
+              <Typography
+                variant="body2"
+                onClick={handleShowFollowing}
+                style={{ cursor: "pointer" }}
+              >
+                {user?.following.length} FOLLOWING
+              </Typography>
+            </div>
+            <div className="userdetails" style={{ padding: 10 }}>
+              <Button
+                variant="contained"
+                onClick={handleFollow}
+                style={{ margin: 20 }}
+              >
+                {user?.followers.includes(currentUserdata.user._id)
+                  ? "UNFOLLOW"
+                  : isRequestPending
+                  ? "REQUESTED"
+                  : "FOLLOW"}
+              </Button>
+              <Button
+                variant="outlined"
+                onClick={isBlocked ? handleUnblock : handleBlock}
+                style={{ margin: 20 }}
+              >
+                {isBlocked ? "UNBLOCK" : "BLOCK"}
+              </Button>
+            </div>
+            {user?.isPrivate &&
+              !user.followers.includes(currentUserdata.user._id) &&
+              !user.following.includes(currentUserdata.user._id) && (
+                <Typography variant="caption" color="textSecondary">
+                  The account is private
+                </Typography>
+              )}
+          </Paper>
+        </Grid>
 
-        <div className="profile-information">
-          <h1>{user?.username}</h1>
-          <p>{user?.bio}</p>
-        </div>
-
-        <div className="udetails">
-          <div className="followers">
-            <a href="#" onClick={handleShowFollowers}>
-              <span className="count">{user?.followers.length}</span>
-              <span className="label">FOLLOWERS</span>
-            </a>
-          </div>
-          <div className="following">
-            <a href="#" onClick={handleShowFollowing}>
-              <span className="count">{user?.following.length}</span>
-              <span className="label">FOLLOWING</span>
-            </a>
-          </div>
-        </div>
-
-        <div className="userdetails">
-          <div className="follow">
-            <a href="#" onClick={handleFollow}>
-              {user?.followers.includes(currentUserdata.user._id)
-                ? "UNFOLLOW"
-                : isRequestPending
-                ? "REQUESTED"
-                : "FOLLOW"}
-            </a>
-          </div>
-          <div className="block">
-            {isBlocked ? (
-              <a href="#" onClick={handleUnblock}>
-                UNBLOCK
-              </a>
-            ) : (
-              <a href="#" onClick={handleBlock}>
-                BLOCK
-              </a>
-            )}
-          </div>
-        </div>
-
-        {user?.isPrivate &&
-          !user.followers.includes(currentUserdata.user._id) &&
-          !user.following.includes(currentUserdata.user._id) && (
-            <p className="private-account">The account is private</p>
-          )}
-
-        {posts.length > 0 && (
-          <div className="userposts">
-            {posts.map((post) => (
-              <div key={post._id} className="userpost">
-                <p>{post.desc}</p>
-                <Carousel>
-                  {post.img?.map((image, index) => (
-                    <img
-                      key={index}
-                      src={image}
-                      alt={`Post Image ${index + 1}`}
-                    />
-                  ))}
-                </Carousel>
-
-                <div className="post-actions">
-                  <IconButton
-                    onClick={() => handleLike(post._id)}
-                    disabled={loadingActions[post._id]}
-                  >
-                    <FontAwesomeIcon
-                      icon={faThumbsUp}
-                      style={{
-                        color: post.likes.includes(currentUserdata.user._id)
-                          ? "blue"
-                          : "gray",
-                      }}
-                    />
-                    <span>{post.likes.length}</span>
-                  </IconButton>
-                  <IconButton
-                    onClick={() => toggleCommentsVisibility(post._id)}
-                  >
-                    <FontAwesomeIcon icon={faCommentDots} />
-                    <span>{post.comments?.length}</span>
-                  </IconButton>
-                </div>
-
-                {showComments[post._id] && (
-                  <div className="comments-section">
-                    <form onSubmit={(e) => handleCommentSubmit(e, post._id)}>
-                      <TextField
-                        value={newComment}
-                        onChange={handleCommentChange}
-                        placeholder="Add a comment..."
-                        fullWidth
+        <Grid
+          item
+          xs={14}
+          sm={5}
+          sx={{
+            marginLeft: isExtraSmallScreen
+              ? 7
+              : isSmallScreen
+              ? 6
+              : isTabScreen
+              ? 40
+              : 65,
+            padding: 0,
+            marginTop: isExtraSmallScreen
+              ? 5
+              : isSmallScreen
+              ? 3
+              : isTabScreen
+              ? 15
+              : 0,
+          }}
+        >
+          {posts.length > 0 && (
+            <div className="userposts" style={{ margin: 10 }}>
+              {posts.map((post) => (
+                <Paper key={post._id} elevation={2} style={{ padding: "10px" }}>
+                  <Typography variant="body1">{post.desc}</Typography>
+                  <Carousel>
+                    {post.img?.map((image, index) => (
+                      <img
+                        key={index}
+                        src={image}
+                        alt={`Post Image ${index + 1}`}
+                        style={{ width: "100%", borderRadius: 0 }}
                       />
-                      <Button type="submit">Post</Button>
-                    </form>
-                    <ul className="comments-list">
-                      {post.comments?.map((comment) => (
-                        <li key={comment._id}>
-                          <strong>{comment.username}:</strong> {comment.text}
-                        </li>
-                      ))}
-                    </ul>
+                    ))}
+                  </Carousel>
+                  <div className="post-actions">
+                    <IconButton
+                      onClick={() => handleLike(post._id)}
+                      disabled={loadingActions[post._id]}
+                    >
+                      <FontAwesomeIcon
+                        icon={faThumbsUp}
+                        style={{
+                          color: post.likes.includes(currentUserdata.user._id)
+                            ? "blue"
+                            : "gray",
+                        }}
+                      />
+                      <span>{post.likes.length}</span>
+                    </IconButton>
+                    <IconButton
+                      onClick={() => toggleCommentsVisibility(post._id)}
+                    >
+                      <FontAwesomeIcon icon={faCommentDots} />
+                      <span>{post.comments?.length}</span>
+                    </IconButton>
                   </div>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
-         {(showFollowers || showFollowing) && (
-        <div className="modal">
-          <div className="modal-content">
-            <span className="close" onClick={handleCloseModal} style={{color:"red", background:"white"}}>
-             X
-            </span>
-            <h2>{showFollowers ? "Followers" : "Following"}</h2>
-            <ul>
-              {(showFollowers ? followers : following).map((user) => (
-                <li key={user._id}>
-                  <img src={user.profilePicture} alt={user.username} />
-                  <span>{user.username}</span>
-                </li>
+
+                  {showComments[post._id] && (
+                    <div className="comments-section">
+                      <form onSubmit={(e) => handleCommentSubmit(e, post._id)}>
+                        <TextField
+                          value={newComment}
+                          onChange={handleCommentChange}
+                          placeholder="Add a comment..."
+                          fullWidth
+                        />
+                        <Button type="submit">Post</Button>
+                      </form>
+                      <List>
+                        {post.comments?.map((comment) => (
+                          <ListItem key={comment._id}>
+                            <ListItemAvatar>
+                              <Avatar>{comment.username.charAt(0)}</Avatar>
+                            </ListItemAvatar>
+                            <ListItemText
+                              primary={comment.username}
+                              secondary={comment.text}
+                            />
+                          </ListItem>
+                        ))}
+                      </List>
+                    </div>
+                  )}
+                </Paper>
               ))}
-            </ul>
-          </div>
-        </div>
-      )}
-      </div>
-    </div>
+            </div>
+          )}
+        </Grid>
+      </Grid>
+
+      <Modal open={showFollowers || showFollowing} onClose={handleCloseModal}>
+        <Paper
+          style={{ padding: "20px", margin: "100px auto", width: "400px" }}
+        >
+          <Typography variant="h6">
+            {showFollowers ? "Followers" : "Following"}
+          </Typography>
+          <Divider />
+          <List>
+            {(showFollowers ? followers : following).map((user) => (
+              <ListItem key={user._id}>
+                <ListItemAvatar>
+                  <Avatar src={user.profilePicture} />
+                </ListItemAvatar>
+                <ListItemText primary={user.username} />
+              </ListItem>
+            ))}
+          </List>
+        </Paper>
+      </Modal>
+    </Container>
   );
 };
-
 export default UserProfile;

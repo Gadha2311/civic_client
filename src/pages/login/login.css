@@ -5,7 +5,7 @@
   padding: 0;
   box-sizing: border-box;
   font-family: "Montserrat", sans-serif;
-  left: 0;
+  left:0;
 }
 
 body {
@@ -217,7 +217,7 @@ body {
 }
 
 .toggle-right {
-  right: 0;
+  left: 400px;
   transform: translateX(0);
 }
 
