@@ -24,7 +24,7 @@ import Post from "../post/post";
 import Navbar from "../../components/navbar/navbar";
 import Sidebar from "../../components/sidebar/sidebar";
 import { useAuth } from "../../context/AuthContext";
-import { auto } from "@cloudinary/url-gen/actions/resize";
+// import { auto } from "@cloudinary/url-gen/actions/resize";
 
 const ProfilePicture: React.FC = () => {
   const [img, setImg] = useState<string | null>(null);
