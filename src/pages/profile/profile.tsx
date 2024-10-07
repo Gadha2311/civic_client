@@ -12,7 +12,7 @@ import {
   ListItem,
   ListItemAvatar,
   ListItemText,
-
+  useMediaQuery,
 } from "@mui/material";
 import { faEdit, faCamera } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -24,10 +24,10 @@ import Post from "../post/post";
 import Navbar from "../../components/navbar/navbar";
 import Sidebar from "../../components/sidebar/sidebar";
 import { useAuth } from "../../context/AuthContext";
+import { auto } from "@cloudinary/url-gen/actions/resize";
 
 const ProfilePicture: React.FC = () => {
   const [img, setImg] = useState<string | null>(null);
-  // const [file, setFile] = useState<File | null>(null);
   const [showEditOptions, setShowEditOptions] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -37,10 +37,12 @@ const ProfilePicture: React.FC = () => {
   const [followers, setFollowers] = useState<any[]>([]);
   const [following, setFollowing] = useState<any[]>([]);
   const { userdata, token, setUserdata } = useAuth();
+  const isSmallScreen = useMediaQuery('(max-width: 650px)');
+  const isExtraSmallScreen = useMediaQuery('(max-width: 380px)');
+  const isTabScreen = useMediaQuery('(max-width: 1300px)');
 
   const location = useLocation();
   const navigate = useNavigate();
-
 
   useEffect(() => {
     const storedUserdata = JSON.parse(localStorage.getItem("user_data") || "{}");
@@ -64,7 +66,6 @@ const ProfilePicture: React.FC = () => {
       reader.readAsDataURL(selectedFile);
       reader.onloadend = () => {
         setImg(reader.result as string);
-        // setFile(selectedFile);
         handleUpload(selectedFile);
       };
     }
@@ -106,9 +107,7 @@ const ProfilePicture: React.FC = () => {
     try {
       const result = await Swal.fire({
         title: "Are you sure?",
-        text: `Do you want to make your account ${
-          newIsPrivate ? "private" : "public"
-        }?`,
+        text: `Do you want to make your account ${newIsPrivate ? "private" : "public"}?`,
         icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
@@ -130,14 +129,12 @@ const ProfilePicture: React.FC = () => {
 
         Swal.fire(
           "Updated!",
-          `Your account has been ${
-            newIsPrivate ? "made private" : "made public"
-          }.`,
+          `Your account has been ${newIsPrivate ? "made private" : "made public"}.`,
           "success"
         );
       }
     } catch (err) {
-      console.error(err);
+ console.error(err);
       Swal.fire(
         "Error!",
         "There was an error updating your privacy status. Please try again later.",
@@ -172,28 +169,52 @@ const ProfilePicture: React.FC = () => {
   };
 
   return (
-    <Box sx={{ marginTop: 200 }}>
-      <Navbar />
+    <Box sx={{ marginTop: isExtraSmallScreen ? 230 : isSmallScreen ? 210 : isTabScreen ?  180: 285 }}>
+      <Box
+        sx={{
+          width: isExtraSmallScreen ? "100%" : isSmallScreen ? "100%" : isTabScreen ? "90%" : "1000px",
+          margin: "0 auto",
+        }}
+      >
+        <Navbar />
+      </Box>
       <Box
         sx={{
           display: "flex",
-          flexDirection: { xs: "column", md: "row" },
+          flexDirection: isExtraSmallScreen ? "column" : isSmallScreen ? "column" : isTabScreen ? "column" : "row",
           alignItems: "center",
           justifyContent: "center",
-          marginTop: 150,
+          marginTop: isExtraSmallScreen ? 50 : isSmallScreen ? 50 : isTabScreen ? 100 : 150,
+          padding: isExtraSmallScreen ? 1 : isSmallScreen ? 1 : isTabScreen ? 2 : 0,
+          width: "100%",
+          overflow: "hidden",
         }}
       >
-        <Sidebar />
+        {isExtraSmallScreen ? (
+          <Box sx={{ width: "100%" }}>
+            <Sidebar />
+          </Box>
+        ) : isSmallScreen ? (
+          <Box sx={{ width: "100%" }}>
+            <Sidebar />
+          </Box>
+        ) : isTabScreen ? (
+          <Box sx={{ width: "100%" }}>
+            <Sidebar />
+          </Box>
+        ) : (
+          <Sidebar />
+        )}
 
         <Box
           sx={{
-            width: { xs: "100%", sm: "90%", md: "75%" },
-            padding: { xs: 2, sm: 5 },
+            width: isExtraSmallScreen ? "90%" : isSmallScreen ? "90%" : isTabScreen ? "80%" : "75%",
+            padding: isExtraSmallScreen ? 0 : isSmallScreen ? 0 : isTabScreen ? 2 : 5,
             boxShadow: 3,
             borderRadius: 2,
             backgroundColor: "#fff",
-            margin: { xs: "0 auto", md: "0 10px" },
-            marginLeft:100
+            margin: isExtraSmallScreen ? "0 25px" : isSmallScreen ? "0 25px" : isTabScreen ? "0 50px" : "0 10px",
+            overflow: "hidden",
           }}
         >
           <Grid container spacing={2}>
@@ -202,13 +223,17 @@ const ProfilePicture: React.FC = () => {
                 sx={{
                   display: "flex",
                   flexDirection: "column",
-                  alignItems:"center",
+                  alignItems: "center",
                 }}
               >
                 <Avatar
                   alt="Profile Picture"
                   src={img || userdata.profilePicture}
-                  sx={{ width: 150, height: 150, border: "4px solid #4a90e2" }}
+                  sx={{
+                    width: isExtraSmallScreen ? 100 : isSmallScreen ? 120 : isTabScreen ? 150 : 150,
+                    height: isExtraSmallScreen ? 100 : isSmallScreen ? 120 : isTabScreen ? 150 : 150,
+                    border: "4px solid #4a90e2",
+                  }}
                 />
                 {uploading && <Typography>Uploading...</Typography>}
                 <Button
@@ -219,7 +244,7 @@ const ProfilePicture: React.FC = () => {
                   Edit
                 </Button>
                 {showEditOptions && (
-                  <Box sx={{ mt: 2, display:"flex", flexDirection:"column" }}>
+                  <Box sx={{ mt: 2, display: "flex", flexDirection: "column" }}>
                     <Button
                       variant="outlined"
                       startIcon={<FontAwesomeIcon icon={faCamera} />}
@@ -253,7 +278,7 @@ const ProfilePicture: React.FC = () => {
               <Typography variant="body1" gutterBottom>
                 {userdata.bio}
               </Typography>
-              <Grid container spacing={2}>
+              <Grid container spacing={4}>
                 <Grid item xs={6}>
                   <Typography variant="h6">
                     {(userdata.followers || []).length}
@@ -268,8 +293,13 @@ const ProfilePicture: React.FC = () => {
                 </Grid>
                 <Grid
                   item
-                  xs={12}
-                  sx={{ display: "flex", alignItems: "center", mt: 1 }}
+                  xs={10}
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    mt: isExtraSmallScreen ? 0 : isSmallScreen ?  0 : isTabScreen ? 0 : -10,
+                    ml: isExtraSmallScreen ? 0 : isSmallScreen ? 0 : isTabScreen ? 0 : 40,
+                  }}
                 >
                   <Switch
                     checked={isPrivate}
@@ -286,15 +316,15 @@ const ProfilePicture: React.FC = () => {
       {isFormOpen && <EditProfileForm closeForm={() => setIsFormOpen(false)} />}
 
       <Modal open={showFollowers || showFollowing} onClose={handleCloseModal}>
-        <Paper sx={{ padding: 3, maxWidth: 400, margin: "auto" }}>
-          <Typography variant="h6" gutterBottom>
+        <Paper sx={{ padding: 3, maxWidth: 400, margin: "auto", mt: 10 }}>
+          <Typography variant="h6">
             {showFollowers ? "Followers" : "Following"}
           </Typography>
           <List>
             {(showFollowers ? followers : following).map((user) => (
               <ListItem key={user._id}>
                 <ListItemAvatar>
-                  <Avatar alt={user.username} src={user.profilePicture} />
+                  <Avatar src={user.profilePicture} />
                 </ListItemAvatar>
                 <ListItemText primary={user.username} />
               </ListItem>

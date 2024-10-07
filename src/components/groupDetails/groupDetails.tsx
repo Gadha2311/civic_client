@@ -20,8 +20,9 @@ const GroupDetails: React.FC<GroupDetailsProps> = ({
   const [showOptions, setShowOptions] = useState<string | null>(null);
   const [showAddParticipantModal, setShowAddParticipantModal] = useState(false);
   const [addParticipantSearchTerm, setAddParticipantSearchTerm] = useState("");
-  const [addParticipantSearchResults, setAddParticipantSearchResults] =
-    useState<User[]>([]);
+  const [addParticipantSearchResults, setAddParticipantSearchResults] = useState<User[]>([]);
+  console.log(updatedGroupDetails);
+  
 
   if (!updatedGroupDetails) {
     return <div>No group details available</div>;
@@ -53,6 +54,8 @@ const GroupDetails: React.FC<GroupDetailsProps> = ({
         participants: prevDetails.participants.filter(
           (p: User) => p._id !== participantId
         ),
+        admin: prevDetails.admin.filter((adminId: string) => adminId !== participantId),
+
       }));
     } catch (error) {
       console.error("Error removing participant:", error);
@@ -212,7 +215,10 @@ const GroupDetails: React.FC<GroupDetailsProps> = ({
                 </li>
               ))}
             </ul>
-            <button className="closeBTN" onClick={() => setShowAddParticipantModal(false)}>
+            <button
+              className="closeBTN"
+              onClick={() => setShowAddParticipantModal(false)}
+            >
               Close
             </button>
           </div>
