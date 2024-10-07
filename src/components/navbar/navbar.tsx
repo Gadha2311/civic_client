@@ -6,7 +6,7 @@ const Navbar = () => {
   const { userdata } = useAuth();
 
   return (
-    <AppBar position="fixed" sx={{ backgroundColor: "#556270", zIndex: 2 }}>
+    <AppBar position="fixed" sx={{backgroundColor: "#556270", zIndex: 2 }}>
       <Toolbar sx={{ justifyContent: "flex-end", height: "60px" }}>
         <div className="profile" style={{ display: "flex", alignItems: "center" }}>
           <Avatar

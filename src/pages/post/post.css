@@ -113,3 +113,108 @@
   color: #888;
   margin-left: 8px;
 }
+
+@media (max-width: 1024px) {
+  .user-posts {
+    margin-left:65px;
+width: 300px;
+    padding: 0px; /* Reduce padding on smaller screens */
+  }
+  .postcontainer{
+    width: 320px;
+    margin-left: 50px;
+  }
+
+  
+  .post-image {
+    margin-top: 5px; /* Reduce margin */
+  }
+
+  .like-container {
+    flex-direction: column; /* Stack buttons vertically */
+    align-items: flex-start; /* Align to start */
+  }
+
+  .like-button, .comment-button {
+    margin-top: 5px; /* Space between buttons */
+  }
+
+  .comments-list {
+    margin-top: 5px; /* Reduce margin */
+  }
+
+  .comment-form {
+    flex-direction: column; /* Stack form elements */
+    align-items: flex-start; /* Align to start */
+  }
+
+  .comment-form > * {
+    margin: 5px 0; /* Adjust margins */
+  }
+}
+@media (max-width: 768px) {
+  .user-posts {
+    margin-left:-15px;
+width: 300px;
+    padding: 0px; /* Reduce padding on smaller screens */
+  }
+  .postcontainer{
+    width: 220px;
+    margin-left: 20px;
+  }
+
+  .post-header {
+    flex-direction: column; /* Stack header elements */
+    align-items: flex-start; /* Align to start */
+  }
+
+  .post-image {
+    margin-top: 5px; /* Reduce margin */
+  }
+
+  .like-container {
+    flex-direction: column; /* Stack buttons vertically */
+    align-items: flex-start; /* Align to start */
+  }
+
+  .like-button, .comment-button {
+    margin-top: 5px; /* Space between buttons */
+  }
+
+  .comments-list {
+    margin-top: 5px; /* Reduce margin */
+  }
+
+  .comment-form {
+    flex-direction: column; /* Stack form elements */
+    align-items: flex-start; /* Align to start */
+  }
+
+  .comment-form > * {
+    margin: 5px 0; /* Adjust margins */
+  }
+}
+
+@media (max-width: 480px) {
+  .user-posts {
+    margin-left: 10;
+    max-width: 100%; /* Allow full width on small screens */
+    padding: 5px; /* Further reduce padding */
+  }
+
+  .post {
+    padding: 8px; /* Further reduce padding */
+  }
+
+  .like-count, .comment-count {
+    font-size: 12px; /* Reduce font size */
+  }
+
+  .like-button .fa-thumbs-up, .comment-button .fa-comment-dots {
+    font-size: 20px; /* Reduce icon size */
+  }
+
+  .comment-date {
+    font-size: 0.8rem; /* Further reduce font size */
+  }
+}

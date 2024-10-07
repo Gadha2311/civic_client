@@ -321,7 +321,6 @@ const Post: React.FC = () => {
                 onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setNewDesc(e.target.value)
                 }
-                fullWidth
               />
               <input type="file" onChange={handleImageChange} />
               <Button onClick={() => handleSave(post._id)}>Save</Button>
@@ -346,8 +345,9 @@ const Post: React.FC = () => {
               )}
             </div>
           ) : (
-            <>
+            <div className="postcontainer">
               <p>{post.desc}</p>
+              <div className="postimage">
               {post.img && post.img.length > 0 && (
                 <Carousel className="carousel-container">
                   {post.img.map((imageUrl, index) => (
@@ -361,7 +361,8 @@ const Post: React.FC = () => {
                   ))}
                 </Carousel>
               )}
-            </>
+              </div>
+            </div>
           )}
           <div className="post-meta">
             <div className="like-container">

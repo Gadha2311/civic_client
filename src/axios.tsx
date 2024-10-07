@@ -11,7 +11,7 @@ const header = {
 console.log(header, "okkkkkkkkkkk");
 
 const Axios: AxiosInstance = axios.create({
-  baseURL: "https://civic-server.onrender.com/api/",   
+  baseURL: "http://localhost:4000/api/",   //https://civic-server.onrender.com/api/
   headers: { "Content-Type": "application/json" },
   withCredentials: false,
 });

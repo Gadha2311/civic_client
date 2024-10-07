@@ -14,6 +14,7 @@ import {
   IconButton,
   TextField,
   CircularProgress,
+  useMediaQuery,
 } from "@mui/material";
 
 const AddPost: React.FC<AddPostProps> = ({ onPostAdded }) => {
@@ -25,6 +26,10 @@ const AddPost: React.FC<AddPostProps> = ({ onPostAdded }) => {
   const [files, setFiles] = useState<File[]>([]);
 
   const queryClient = useQueryClient();
+
+  const isSmallScreen = useMediaQuery("(max-width: 650px)");
+  const isExtraSmallScreen = useMediaQuery("(max-width: 380px)");
+  const isTabScreen = useMediaQuery("(max-width: 1300px)");
 
   useEffect(() => {
     if (!userdata) {
@@ -106,24 +111,36 @@ const AddPost: React.FC<AddPostProps> = ({ onPostAdded }) => {
   };
 
   return (
-    <Box
+    <Box 
       sx={{
         boxShadow: 3,
         borderRadius: 2,
         p: 3,
         paddingTop: "10px",
         backgroundColor: "#e9f5ff",
-        width: "100%",
+        width: isExtraSmallScreen
+        ? "80%"
+        : isSmallScreen
+        ? "75%"
+        : isTabScreen
+        ? "100%"
+        : "100%",
         maxWidth: "768px",
         margin: "auto",
-        marginLeft: "60px",
+        marginLeft: isExtraSmallScreen
+        ? "10px"
+        : isSmallScreen
+        ? "30px"
+        : isTabScreen
+        ? "40px"
+        : "50px",
         marginTop: "80px",
         height: "auto", 
         overflow: "hidden", 
       }}
     >
       <Grid container spacing={2}>
-        <Grid item xs={12}>
+        <Grid item xs={10}>
           <TextField
             fullWidth
             multiline

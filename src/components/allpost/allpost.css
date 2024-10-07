@@ -190,7 +190,7 @@
   }
   .carousel-container {
     width: 100%;
-    height: 200px;
+    height: 100px;
   }
   .carousel-image {
     width: 100%;
@@ -207,10 +207,11 @@
 /* Tablets (max-width: 768px) */
 @media only screen and (max-width: 990px) {
   .followed-posts {
-    padding: 15px;
+padding-left: 0px;
   }
   .follower-post {
-    margin-bottom: 15px;
+    width: 300px;
+    margin-bottom: 10px;
   }
   .post-header {
     flex-direction: row;
@@ -224,11 +225,12 @@
   }
   .carousel-container {
     width: 80%;
-    height: 250px;
+    height: 150px;
   }
   .carousel-image {
     width: 100%;
-    height: 100%;
+    height: 80%;
+    
   }
 }
 
