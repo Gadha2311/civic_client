@@ -82,9 +82,9 @@ const NotificationPage: React.FC = () => {
     }
   };
 
-  // if (loading) {
-  //   return <CircularProgress />;
-  // }
+  if (loading) {
+    return <CircularProgress />;
+  }
 
   return (
     <Grid container sx={{ height: "90vh" }}>
