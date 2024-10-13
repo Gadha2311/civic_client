@@ -10,13 +10,45 @@ const EditProfileForm: React.FC<EditProfileFormProps> = ({ closeForm }) => {
     name: userdata.username,
     bio: userdata.bio,
   });
+  
+  const [errors, setErrors] = useState({
+    name: "",
+    bio: "",
+  });
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setEditData({ ...editData, [name]: value });
+    
+
+    setErrors({ ...errors, [name]: "" });
+  };
+
+  const validateForm = () => {
+    let valid = true;
+    const newErrors = { name: "", bio: "" };
+
+
+    if (!editData.name.trim()) {
+      newErrors.name = "Name is required.";
+      valid = false;
+    } else if (editData.name.trim().length < 3) {
+      newErrors.name = "Name must be at least 3 characters long.";
+      valid = false;
+    }
+
+    if (editData.bio.length > 150) {
+      newErrors.bio = "Bio cannot exceed 150 characters.";
+      valid = false;
+    }
+
+    setErrors(newErrors);
+    return valid;
   };
 
   const handleSaveChanges = async () => {
+    if (!validateForm()) return;
+
     try {
       const response = await Axios.put("/auth/updateProfileDetails", {
         name: editData.name,
@@ -62,6 +94,8 @@ const EditProfileForm: React.FC<EditProfileFormProps> = ({ closeForm }) => {
           variant="outlined"
           fullWidth
           margin="normal"
+          error={!!errors.name} 
+          helperText={errors.name} 
         />
         <TextField
           label="Bio"
@@ -71,6 +105,8 @@ const EditProfileForm: React.FC<EditProfileFormProps> = ({ closeForm }) => {
           variant="outlined"
           fullWidth
           margin="normal"
+          error={!!errors.bio} 
+          helperText={errors.bio} 
         />
         <Button
           variant="contained"

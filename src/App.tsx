@@ -4,7 +4,7 @@ import {
   Routes,
   Navigate,
 } from "react-router-dom";
-import { ReactNode, } from "react";
+import { ReactNode, Suspense, useEffect, } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Authprovider, useAuth } from "./context/AuthContext";
 import { AdminAuthProvider, useAdminAuth } from "./context/AdminAuthContext";
@@ -25,15 +25,17 @@ import NotFound from "./pages/error/error";
 import Chat from "./pages/chat/chat";
 import { SocketProvider } from "./context/socket";
 import Dashboard from "./admin/AdminDashboard/admindashboard";
+import { setupAxiosInterceptors } from "./axios";
+import  Loading from "./components/loading/loading";
 const queryClient = new QueryClient();
 
 function App() {
-  // const {socket}=useContext(SocketContext)
-  // useEffect(()=>{
-  //   socket?.emit("connection")
-  // },[]
-  // )
+   const { logout } = useAuth(); 
+  useEffect(() => {
+    setupAxiosInterceptors(logout); 
+  }, [logout])
   return (
+    <Suspense fallback={<Loading loading={true}/>}>
     <SocketProvider>
     <Authprovider>
       
@@ -138,6 +140,7 @@ function App() {
      
     </Authprovider>
     </SocketProvider>
+    </Suspense>
   );
 }
 
@@ -194,14 +197,19 @@ function AdminRoutes() {
 
 function AuthRoute({ children }: { children: ReactNode }) {
   const { isAuthenticated } = useAuth();
+  console.log("AuthRoute check:", isAuthenticated);
+  // const storedData = JSON.parse(localStorage.getItem("user_data") || "{}");
 
-  return isAuthenticated ? <Navigate to="/home" /> : children;
+  // const location = useLocation()
+  return  isAuthenticated ? <Navigate to="/home" /> : children;
 }
 
 function ProtectedRoute({ children }: { children: ReactNode }) {
   const { isAuthenticated } = useAuth();
+  // console.log("ProtectedRoute check:", isAuthenticated);
+  const storedData = JSON.parse(localStorage.getItem("user_data") || "{}");
 
-  return isAuthenticated ? children : <Navigate to="/login" />;
+  return  storedData.userToken||isAuthenticated ? children : <Navigate to="/login" />;
 }
 
 export default App;

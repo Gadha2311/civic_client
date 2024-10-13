@@ -11,7 +11,6 @@ const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const {
-    // loading: signUpLoading,
     error: signUpError,
     registerUser,
   } = useSignup();
@@ -54,27 +53,44 @@ const Login = () => {
     setFormValues({ ...formValues, [name]: value });
   };
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
+const handleSubmit = async (e: FormEvent) => {
+  e.preventDefault();
 
-    if (ForgetPassword) {
-      try {
-        await sendResetEmail(formValues.email);
-      } catch (error: any) {
-        alert(error.message);
-      }
-    } else if (isSignIn) {
-      LoginUser(formValues);
-    } else {
-      registerUser(formValues);
+  if (ForgetPassword) {
+    try {
+      await sendResetEmail(formValues.email);
+    } catch (error: any) {
+      alert(error.message);
+    }
+  } else if (isSignIn) {
+    try {
+      await LoginUser(formValues);
+    } catch (error: any) {
+      alert(error.message); 
+    }
+  } else {
+    if (formValues.password !== formValues.confirmpassword) {
+      Swal.fire({
+        icon: "warning",
+        title: "Oops...",
+        text: "Password Missmatch!",
+      });
+      return;
+    }
+    try {
+      await registerUser(formValues);
       setFormValues({
         username: "",
         email: "",
         password: "",
         confirmpassword: "",
       });
+    } catch (error: any) {
+      alert(error.message);
     }
-  };
+  }
+};
+
 
   const handleSignUp = () => {
     setIsSignIn(false);

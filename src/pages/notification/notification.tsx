@@ -14,17 +14,12 @@ import {
   Box,
 } from "@mui/material";
 import { SocketContext } from "../../context/socket";
+import { NotificationInterface } from "../../Interfaces/notificationInterface";
 
-interface Notification {
-  _id: string;
-  content: string;
-  createdAt: string;
-  postImage?: string;
-  type?: string;
-}
+
 
 const NotificationPage: React.FC = () => {
-  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [notifications, setNotifications] = useState<NotificationInterface[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const { socket } = useContext(SocketContext);
@@ -87,9 +82,9 @@ const NotificationPage: React.FC = () => {
     }
   };
 
-  if (loading) {
-    return <CircularProgress />;
-  }
+  // if (loading) {
+  //   return <CircularProgress />;
+  // }
 
   return (
     <Grid container sx={{ height: "90vh" }}>

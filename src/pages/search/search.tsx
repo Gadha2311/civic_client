@@ -33,7 +33,7 @@ const Search: React.FC = () => {
   const handleSearch = () => {
     setLoading(true);
     setShowSuggestions(false);
-    Axios.get(`/auth/search/${searchTerm}`, config)
+    Axios.get(`/auth/search/${searchTerm}`)
       .then((res) => {
         console.log(`API response: ${res.data}`);
         setSearchResults(res.data);
@@ -52,7 +52,7 @@ const Search: React.FC = () => {
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       if (searchTerm.length >= 2) {
-        Axios.get(`/auth/search/${searchTerm}`, config)
+        Axios.get(`/auth/search/${searchTerm}`)
           .then((res) => {
             console.log(`API response: ${res.data}`);
             setSearchResults(res.data);

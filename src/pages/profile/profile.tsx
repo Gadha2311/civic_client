@@ -38,15 +38,17 @@ const ProfilePicture: React.FC = () => {
   const [followers, setFollowers] = useState<any[]>([]);
   const [following, setFollowing] = useState<any[]>([]);
   const { userdata, token, setUserdata } = useAuth();
-  const isSmallScreen = useMediaQuery('(max-width: 650px)');
-  const isExtraSmallScreen = useMediaQuery('(max-width: 380px)');
-  const isTabScreen = useMediaQuery('(max-width: 1300px)');
+  const isSmallScreen = useMediaQuery("(max-width: 650px)");
+  const isExtraSmallScreen = useMediaQuery("(max-width: 380px)");
+  const isTabScreen = useMediaQuery("(max-width: 1300px)");
 
   const location = useLocation();
   const navigate = useNavigate();
 
   useEffect(() => {
-    const storedUserdata = JSON.parse(localStorage.getItem("user_data") || "{}");
+    const storedUserdata = JSON.parse(
+      localStorage.getItem("user_data") || "{}"
+    );
     if (!storedUserdata.user || !storedUserdata.userToken) {
       navigate("/login", { replace: true });
       return;
@@ -108,7 +110,9 @@ const ProfilePicture: React.FC = () => {
     try {
       const result = await Swal.fire({
         title: "Are you sure?",
-        text: `Do you want to make your account ${newIsPrivate ? "private" : "public"}?`,
+        text: `Do you want to make your account ${
+          newIsPrivate ? "private" : "public"
+        }?`,
         icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
@@ -130,12 +134,14 @@ const ProfilePicture: React.FC = () => {
 
         Swal.fire(
           "Updated!",
-          `Your account has been ${newIsPrivate ? "made private" : "made public"}.`,
+          `Your account has been ${
+            newIsPrivate ? "made private" : "made public"
+          }.`,
           "success"
         );
       }
     } catch (err) {
- console.error(err);
+      console.error(err);
       Swal.fire(
         "Error!",
         "There was an error updating your privacy status. Please try again later.",
@@ -171,142 +177,232 @@ const ProfilePicture: React.FC = () => {
 
   return (
     <Box
-  sx={{
-    position:"absolute",
-   marginTop:isExtraSmallScreen?-30:isSmallScreen?-40:isTabScreen?-60:-30,
-   marginLeft:isExtraSmallScreen?10:isSmallScreen?10:isTabScreen?40:40,
-  maxWidth: isExtraSmallScreen ? "100%" : isSmallScreen ? "100%" : isTabScreen ? "90%" : "1000px",
-  overflowX: "auto",
-  left:0
-  }}
->
-  <Box
-    sx={{
-      width: isExtraSmallScreen ? "100%" : isSmallScreen ? "100%" : isTabScreen ? "90%" : "1000px",
-    }}
-  >
-    <Navbar />
-  </Box>
-  
-  <Box
-    sx={{
-      display: "flex",
-      position:"relative",
-      flexDirection: isExtraSmallScreen || isSmallScreen || isTabScreen ? "column" : "row",
-      padding: isExtraSmallScreen ? 1 : isSmallScreen ? 1 : isTabScreen ? 2 : 0,
-      marginLeft:isExtraSmallScreen?0:isSmallScreen?0:isTabScreen?0:-20,
-      width: "100%",
-    }}
-  >
-    <Box sx={{ width: "100%", maxWidth: "300px" }}>
-      <Sidebar />
-    </Box>
-
-    <Box
       sx={{
-        position:"relative",
-        width: isExtraSmallScreen ? "90%" : isSmallScreen ? "90%" : isTabScreen ? "80%" : "75%",
-        padding: isExtraSmallScreen ? 0 : isSmallScreen ? 0 : isTabScreen ? 2 : 5,
-        boxShadow: 3,
-        borderRadius: 2,
-        backgroundColor: "#fff",
-           marginTop: isExtraSmallScreen ? 0 : isSmallScreen ? 0 : isTabScreen ? 0 : 0,
+        position: "absolute",
+        marginTop: isExtraSmallScreen
+          ? -30
+          : isSmallScreen
+          ? -40
+          : isTabScreen
+          ? -60
+          : -30,
+        marginLeft: isExtraSmallScreen
+          ? 10
+          : isSmallScreen
+          ? 10
+          : isTabScreen
+          ? 40
+          : 40,
+        maxWidth: isExtraSmallScreen
+          ? "100%"
+          : isSmallScreen
+          ? "100%"
+          : isTabScreen
+          ? "90%"
+          : "1000px",
+        overflowX: "auto",
+        left: 0,
       }}
     >
-      <Grid container spacing={2}>
-        <Grid item xs={12} md={4}>
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center"
-            }}
-          >
-            <Avatar
-              alt="Profile Picture"
-              src={img || userdata.profilePicture}
-              sx={{
-                width: isExtraSmallScreen ? 100 : isSmallScreen ? 120 : isTabScreen ? 150 : 150,
-                height: isExtraSmallScreen ? 100 : isSmallScreen ? 120 : isTabScreen ? 150 : 150,
-                border: "4px solid #4a90e2",
-              }}
-            />
-            {uploading && <Typography>Uploading...</Typography>}
-            <Button onClick={handleEditClick} sx={{ mt: 2 }} variant="contained">
-              Edit
-            </Button>
-            {showEditOptions && (
-              <Box sx={{ mt: 2, display: "flex", flexDirection: "column" }}>
-                <Button
-                  variant="outlined"
-                  startIcon={<FontAwesomeIcon icon={faCamera} />}
-                  component="label"
-                >
-                  Change Picture
-                  <input type="file" hidden onChange={handleFileChange} accept="image/*" />
-                </Button>
-                <Button
-                  variant="outlined"
-                  startIcon={<FontAwesomeIcon icon={faEdit} />}
-                  onClick={() => setIsFormOpen(true)}
-                  sx={{ mt: 1 }}
-                >
-                  Edit Details
-                </Button>
-              </Box>
-            )}
-          </Box>
-        </Grid>
+      <Box
+        sx={{
+          width: isExtraSmallScreen
+            ? "100%"
+            : isSmallScreen
+            ? "100%"
+            : isTabScreen
+            ? "90%"
+            : "1000px",
+        }}
+      >
+        <Navbar />
+      </Box>
 
-        <Grid item xs={12} md={4}>
-          <Typography variant="h4" gutterBottom>
-            {userdata.username}
-          </Typography>
-          <Typography variant="body1" gutterBottom>
-            {userdata.bio}
-          </Typography>
-          <Grid container spacing={4}>
-            <Grid item xs={6}>
-              <Typography variant="h6">{(userdata.followers || []).length}</Typography>
-              <Button onClick={handleShowFollowers}>Followers</Button>
+      <Box
+        sx={{
+          display: "flex",
+          position: "relative",
+          flexDirection:
+            isExtraSmallScreen || isSmallScreen || isTabScreen
+              ? "column"
+              : "row",
+          padding: isExtraSmallScreen
+            ? 1
+            : isSmallScreen
+            ? 1
+            : isTabScreen
+            ? 2
+            : 0,
+          marginLeft: isExtraSmallScreen
+            ? 0
+            : isSmallScreen
+            ? 0
+            : isTabScreen
+            ? 0
+            : -20,
+          width: "100%",
+        }}
+      >
+        <Box sx={{ width: "100%", maxWidth: "300px" }}>
+          <Sidebar />
+        </Box>
+
+        <Box
+          sx={{
+            position: "relative",
+            width: isExtraSmallScreen
+              ? "90%"
+              : isSmallScreen
+              ? "90%"
+              : isTabScreen
+              ? "80%"
+              : "75%",
+            padding: isExtraSmallScreen
+              ? 0
+              : isSmallScreen
+              ? 0
+              : isTabScreen
+              ? 2
+              : 5,
+            boxShadow: 3,
+            borderRadius: 2,
+            backgroundColor: "#fff",
+            marginTop: isExtraSmallScreen
+              ? 0
+              : isSmallScreen
+              ? 0
+              : isTabScreen
+              ? 0
+              : 0,
+          }}
+        >
+          <Grid container spacing={2}>
+            <Grid item xs={12} md={4}>
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                }}
+              >
+                <Avatar
+                  alt="Profile Picture"
+                  src={img || userdata?.profilePicture}
+                  sx={{
+                    width: isExtraSmallScreen
+                      ? 100
+                      : isSmallScreen
+                      ? 120
+                      : isTabScreen
+                      ? 150
+                      : 150,
+                    height: isExtraSmallScreen
+                      ? 100
+                      : isSmallScreen
+                      ? 120
+                      : isTabScreen
+                      ? 150
+                      : 150,
+                    border: "4px solid #4a90e2",
+                  }}
+                />
+                {uploading && <Typography>Uploading...</Typography>}
+                <Button
+                  onClick={handleEditClick}
+                  sx={{ mt: 2 }}
+                  variant="contained"
+                >
+                  Edit
+                </Button>
+                {showEditOptions && (
+                  <Box sx={{ mt: 2, display: "flex", flexDirection: "column" }}>
+                    <Button
+                      variant="outlined"
+                      startIcon={<FontAwesomeIcon icon={faCamera} />}
+                      component="label"
+                    >
+                      Change Picture
+                      <input
+                        type="file"
+                        hidden
+                        onChange={handleFileChange}
+                        accept="image/*"
+                      />
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      startIcon={<FontAwesomeIcon icon={faEdit} />}
+                      onClick={() => setIsFormOpen(true)}
+                      sx={{ mt: 1 }}
+                    >
+                      Edit Details
+                    </Button>
+                  </Box>
+                )}
+              </Box>
             </Grid>
-            <Grid item xs={6}>
-              <Typography variant="h6">{(userdata.following || []).length}</Typography>
-              <Button onClick={handleShowFollowing}>Following</Button>
-            </Grid>
-            <Grid item xs={10} sx={{ display: "flex", alignItems: "center", ml: 4 }}>
-              <Switch checked={isPrivate} onChange={(e) => handleSwitchChange(e.target.checked)} />
-              <Typography>{isPrivate ? "Private" : "Public"}</Typography>
+
+            <Grid item xs={12} md={4}>
+              <Typography variant="h4" gutterBottom>
+                {userdata?.username}
+              </Typography>
+              <Typography variant="body1" gutterBottom>
+                {userdata?.bio}
+              </Typography>
+              <Grid container spacing={4}>
+                <Grid item xs={6}>
+                  <Typography variant="h6">
+                    {(userdata?.followers || []).length}
+                  </Typography>
+                  <Button onClick={handleShowFollowers}>Followers</Button>
+                </Grid>
+                <Grid item xs={6}>
+                  <Typography variant="h6">
+                    {(userdata?.following || []).length}
+                  </Typography>
+                  <Button onClick={handleShowFollowing}>Following</Button>
+                </Grid>
+                <Grid
+                  item
+                  xs={10}
+                  sx={{ display: "flex", alignItems: "center", ml: 4 }}
+                >
+                  <Switch
+                    checked={isPrivate}
+                    onChange={(e) => handleSwitchChange(e.target.checked)}
+                  />
+                  <Typography>{isPrivate ? "Private" : "Public"}</Typography>
+                </Grid>
+              </Grid>
             </Grid>
           </Grid>
-        </Grid>
-      </Grid>
+        </Box>
+      </Box>
+
+      {isFormOpen && <EditProfileForm closeForm={() => setIsFormOpen(false)} />}
+
+      <Modal open={showFollowers || showFollowing} onClose={handleCloseModal}>
+        <Paper sx={{ padding: 3, maxWidth: 400, margin: "auto", mt: 10 }}>
+          <Typography variant="h6">
+            {showFollowers ? "Followers" : "Following"}
+          </Typography>
+          <List>
+            {(showFollowers ? followers : following).map((user) => (
+              <ListItem key={user._id}>
+                <ListItemAvatar>
+                  <Avatar src={user.profilePicture} />
+                </ListItemAvatar>
+                <ListItemText primary={user.username} />
+              </ListItem>
+            ))}
+          </List>
+        </Paper>
+      </Modal>
+
+      <Box>
+        <Post />
+      </Box>
     </Box>
-  </Box>
-
-  {isFormOpen && <EditProfileForm closeForm={() => setIsFormOpen(false)} />}
-
-  <Modal open={showFollowers || showFollowing} onClose={handleCloseModal}>
-    <Paper sx={{ padding: 3, maxWidth: 400, margin: "auto", mt: 10 }}>
-      <Typography variant="h6">{showFollowers ? "Followers" : "Following"}</Typography>
-      <List>
-        {(showFollowers ? followers : following).map((user) => (
-          <ListItem key={user._id}>
-            <ListItemAvatar>
-              <Avatar src={user.profilePicture} />
-            </ListItemAvatar>
-            <ListItemText primary={user.username} />
-          </ListItem>
-        ))}
-      </List>
-    </Paper>
-  </Modal>
-
-  <Box >
-    <Post />
-  </Box>
-</Box>
-
   );
 };
 

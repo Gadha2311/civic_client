@@ -29,9 +29,9 @@ export const Authprovider = ({ children }: AuthProviderProps) => {
   useEffect(() => {
     const storedData = JSON.parse(localStorage.getItem("user_data") || "{}");
     if (storedData.userToken && storedData.user) {
+      setIsAuthenticated(true);
       setToken(storedData.userToken);
       setUserdata(storedData.user);
-      setIsAuthenticated(true);
     }
   }, []);
 

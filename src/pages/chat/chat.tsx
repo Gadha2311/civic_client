@@ -65,7 +65,7 @@ const Chat: React.FC = () => {
   const [documentFile, setDocumentFile] = useState<File | null>(null);
   // const [isOpenCallModal, setIsOpenCallModal] = useState<boolean>(false);
   const { userdata } = useAuth();
-  const currentUserId = userdata._id;
+  const currentUserId = userdata?._id;
   console.log(messages);
 
   const { socket } = useContext(SocketContext);
