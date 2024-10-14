@@ -1,21 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import Axios from "../../axios";
-import { User } from "../../Interfaces/profileInterface";
-import { Postinterface } from "../../Interfaces/postInterface";
+import {AdminAxios} from "../../axios";
 import { useAdminAuth } from "../../context/AdminAuthContext";
 import Sidebar from "../../components/adminsidebar/adminSidebar";
 import "./reportTable.css";
+import { Report } from "../../Interfaces/adminInterface";
 
-interface Report {
-  report: {
-    reason: string;
-    reportedDatetime: string;
-  };
-  post: Postinterface;
-  reportedUser: User;
-  postOwner: User;
-}
 
 const ReportDetailsPage: React.FC = () => {
   const { postId } = useParams<{ postId: string }>();
@@ -28,7 +18,7 @@ const ReportDetailsPage: React.FC = () => {
 
   const fetchReportDetails = async () => {
     try {
-      const response = await Axios.get(`/auth/reportdetails/${postId}`, {
+      const response = await AdminAxios.get(`/auth/reportdetails/${postId}`, {
         headers: { Authorization: `Bearer ${admintoken}` },
       });
       setReportDetails(response.data);

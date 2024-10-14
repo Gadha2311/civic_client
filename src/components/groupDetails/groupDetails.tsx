@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCrown, faEllipsisV } from "@fortawesome/free-solid-svg-icons";
 import { User } from "../../Interfaces/profileInterface";
 import "./groupDetails.css";
-import Axios from "../../axios";
+import {Axios} from "../../axios";
 
 interface GroupDetailsProps {
   groupDetails: any;

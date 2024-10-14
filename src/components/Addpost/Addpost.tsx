@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
 import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
 import { useQueryClient } from "@tanstack/react-query";
-import Axios from "../../axios";
+import {Axios }from "../../axios";
 import InsertEmoticonIcon from "@mui/icons-material/InsertEmoticon";
 import EmojiPicker from "emoji-picker-react";
 import CloseIcon from "@mui/icons-material/Close";

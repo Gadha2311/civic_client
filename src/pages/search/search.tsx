@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Navbar from "../../components/navbar/navbar";
 import Sidebar from "../../components/sidebar/sidebar";
 import { useNavigate } from "react-router-dom";
-import Axios from "../../axios";
+import{ Axios} from "../../axios";
 import { useAuth } from "../../context/AuthContext";
 import {
   Box,

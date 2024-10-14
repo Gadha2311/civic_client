@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import "./chat.css";
-import Axios from "../../axios";
+import {Axios} from "../../axios";
 import EmojiPicker from "emoji-picker-react";
 import Navbar from "../../components/navbar/navbar";
 import Sidebar from "../../components/sidebar/sidebar";
@@ -18,8 +18,6 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import Swal from "sweetalert2";
 import { useAuth } from "../../context/AuthContext";
-import {} from "module";
-import {} from "module";
 import { ZegoUIKitPrebuilt } from "@zegocloud/zego-uikit-prebuilt";
 import ZIM from "zego-zim-web";
 
@@ -497,14 +495,17 @@ const Chat: React.FC = () => {
                       style={{
                         display: "flex",
                         alignItems: "center",
-                        color: "black", 
+                        color: "black",
                         textDecoration: "none",
-                        fontWeight: "bold", 
-                        margin: "2px 0", 
-                        fontSize:"10px"
+                        fontWeight: "bold",
+                        margin: "2px 0",
+                        fontSize: "10px",
                       }}
                     >
-                      <FontAwesomeIcon icon={faFile} style={{fontSize: "34px", marginRight: "20px"}} />
+                      <FontAwesomeIcon
+                        icon={faFile}
+                        style={{ fontSize: "34px", marginRight: "20px" }}
+                      />
                       View Document
                     </a>
                   )}

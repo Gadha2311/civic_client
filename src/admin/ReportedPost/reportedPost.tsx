@@ -1,21 +1,14 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "../../components/adminsidebar/adminSidebar";
-import Axios from "../../axios";
+import {AdminAxios} from "../../axios";
 import { useAdminAuth } from "../../context/AdminAuthContext";
 import "./reportedPost.css";
 import { User } from "../../Interfaces/profileInterface";
 import { Postinterface } from "../../Interfaces/postInterface";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import { Report } from "../../Interfaces/adminInterface";
 
-interface Report {
-  _id: string;
-  post: Postinterface;
-  reportedUser: User;
-  reason: string;
-  reportedDatetime: string;
-  postOwner: User;
-}
 
 const ReportTable: React.FC = () => {
   const { admintoken } = useAdminAuth();
@@ -34,7 +27,7 @@ const ReportTable: React.FC = () => {
 
   const fetchReports = async () => {
     try {
-      const response = await Axios.get("/auth/reportedposts", {
+      const response = await AdminAxios.get("/auth/reportedposts", {
         headers: { Authorization: `Bearer ${admintoken}` },
         params: {
           page: currentPage,
@@ -102,7 +95,7 @@ const ReportTable: React.FC = () => {
 
     if (confirmation.isConfirmed) {
       try {
-        await Axios.post(`/auth/${action.toLowerCase()}post/${postId}`, {}, {
+        await AdminAxios.post(`/auth/${action.toLowerCase()}post/${postId}`, {}, {
           headers: { Authorization: `Bearer ${admintoken}` },
         });
         Swal.fire(

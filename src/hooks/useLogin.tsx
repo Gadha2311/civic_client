@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Axios from "../axios";
+import {Axios }from "../axios";
 import { useNavigate } from "react-router-dom";
 import { message } from "antd";
 import { useAuth } from "../context/AuthContext";

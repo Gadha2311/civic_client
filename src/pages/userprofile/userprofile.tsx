@@ -19,12 +19,10 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import { useParams } from "react-router-dom";
-import Axios from "../../axios";
+import {Axios} from "../../axios";
 import { AxiosResponse } from "axios";
-// import "./userprofile.css";
 import Navbar from "../../components/navbar/navbar";
 import Sidebar from "../../components/sidebar/sidebar";
-// import { useAuth } from "../../context/AuthContext";
 import Swal from "sweetalert2";
 import { User } from "../../Interfaces/profileInterface";
 import { Postinterface } from "../../Interfaces/postInterface";
@@ -44,7 +42,6 @@ const UserProfile: React.FC = () => {
   const [isBlocked, setIsBlocked] = useState(false);
   const [isRequestPending, SetIsRequestPending] = useState(false);
   const [newComment, setNewComment] = useState<string>("");
-  // const [commentingPostId, setCommentingPostId] = useState<string | null>(null);
   const [showComments, setShowComments] = useState<Record<string, boolean>>({});
   const [loadingActions, setLoadingActions] = useState<Record<string, boolean>>(
     {}

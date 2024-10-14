@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
-import Axios from "../../axios";
+import {AdminAxios} from "../../axios";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import {
@@ -13,19 +13,14 @@ import {
   Legend,
 } from "chart.js";
 import "./impressionGraph.css";
-import { Comment } from "../../Interfaces/postInterface";
+import { Postinterface } from "../../Interfaces/postInterface";
+
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-interface PostInterface {
-  _id: string;
-  likes: string[];
-  comments: Comment[];
-  createdAt: string;
-}
 
 const ImpressionGraph: React.FC = () => {
-  const [posts, setPosts] = useState<PostInterface[]>([]);
+  const [posts, setPosts] = useState<Postinterface[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [startDate, setStartDate] = useState<Date | undefined>(undefined);
@@ -38,7 +33,7 @@ const ImpressionGraph: React.FC = () => {
   const fetchAllPosts = async () => {
     try {
     
-      const response = await Axios.get("/auth/posts", {
+      const response = await AdminAxios.get("/auth/posts", {
         params: {
           startDate: startDate ? startDate.toISOString() : undefined,
           endDate: endDate ? endDate.toISOString() : undefined,
@@ -46,7 +41,7 @@ const ImpressionGraph: React.FC = () => {
       });
 
       const sortedPosts = response.data.sort(
-        (a: PostInterface, b: PostInterface) =>
+        (a: Postinterface, b: Postinterface) =>
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       );
       setPosts(sortedPosts);

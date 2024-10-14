@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer } from "recharts";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import Axios from "../../axios";
+import {AdminAxios} from "../../axios";
 import "./trafficGraph.css";
 import { format } from "date-fns";
 
@@ -17,7 +17,7 @@ const TrafficGraph = () => {
         try {
           const formattedStartDate = format(startDate, "yyyy-MM-dd");
           const formattedEndDate = format(endDate, "yyyy-MM-dd");
-          const response = await Axios.get("/auth/registrations", {
+          const response = await AdminAxios.get("/auth/registrations", {
             params: { startDate: formattedStartDate, endDate: formattedEndDate },
           });
           setData(response.data.data);

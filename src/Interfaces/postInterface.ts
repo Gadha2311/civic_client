@@ -15,7 +15,7 @@ export interface Postinterface {
   likes: string[];
   authorName: string;
   authorProfilePicture: string;
-  comments?: Comment[];
+  comments: Comment[];
   blocked:boolean
 }
 

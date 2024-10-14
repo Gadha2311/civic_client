@@ -1,7 +1,7 @@
 import { useState } from "react";
 // import { useAuth } from "../context/AuthContext";
 import { message } from "antd";
-import Axios from "../axios";
+import {Axios} from "../axios";
 import { useNavigate } from "react-router-dom";
 import { SignupValues, UseSignupReturn } from "../Interfaces/userInterface";
 import Swal from "sweetalert2";

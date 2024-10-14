@@ -1,5 +1,5 @@
 import React, { ChangeEvent, useState } from "react";
-import Axios from "../../axios";
+import {Axios }from "../../axios";
 import { useAuth } from "../../context/AuthContext";
 import { EditProfileFormProps } from "../../Interfaces/profileInterface";
 import { Box, Button, TextField, Typography } from "@mui/material";

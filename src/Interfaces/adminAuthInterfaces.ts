@@ -12,3 +12,4 @@ export interface AdminAuthContextProps {
 export interface AdminAuthProviderProps {
   children: ReactNode;
 }
+

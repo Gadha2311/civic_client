@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "../../components/adminsidebar/adminSidebar";
 import "./adminUserlist.css";
-import Axios from "../../axios";
+import { AdminAxios } from "../../axios";
 import Swal from "sweetalert2";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { useAdminAuth } from "../../context/AdminAuthContext";
 import { User } from "../../Interfaces/profileInterface";
-
 
 const UserTable: React.FC = () => {
   const { admintoken } = useAdminAuth();
@@ -23,11 +22,8 @@ const UserTable: React.FC = () => {
   const fetchUsers = async () => {
     setLoading(true);
     try {
-      const response = await Axios.get(
-        `/auth/userlist?page=${currentPage}&limit=${usersPerPage}`,
-        {
-          headers: { Authorization: `Bearer ${admintoken}` },
-        }
+      const response = await AdminAxios.get(
+        `/auth/userlist?page=${currentPage}&limit=${usersPerPage}`
       );
       setUsers(response.data.users);
       setUserlist(response.data.users);
@@ -42,11 +38,9 @@ const UserTable: React.FC = () => {
   const fetchSearchResults = async () => {
     setLoading(true);
     try {
-      const response = await Axios.get(
-        `/auth/search/${searchtext}?page=${currentPage}&limit=${usersPerPage}`,
-        {
-          headers: { Authorization: `Bearer ${admintoken}` },
-        }
+      const response = await AdminAxios.get(
+        `/auth/search/${searchtext}?page=${currentPage}&limit=${usersPerPage}`
+        
       );
       console.log("Search results:", response.data);
       setUserlist(response.data);
@@ -83,7 +77,7 @@ const UserTable: React.FC = () => {
           const endpoint = currentStatus
             ? `/auth/unblock/${userId}`
             : `/auth/block/${userId}`;
-          await Axios.put(endpoint, { blocked: !currentStatus });
+          await AdminAxios.put(endpoint, { blocked: !currentStatus });
 
           setUserlist((prevUsers) =>
             prevUsers.map((user) =>
@@ -108,12 +102,10 @@ const UserTable: React.FC = () => {
     });
   };
 
- 
   const handlesort = () => {
     setShowsort(!showsort);
   };
 
-  
   const sortAZ = () => {
     const sortedUsers = [...userlist].sort((a, b) =>
       a.username.localeCompare(b.username)
@@ -121,7 +113,6 @@ const UserTable: React.FC = () => {
     setUserlist(sortedUsers);
     setShowsort(false);
   };
-
 
   const sortZA = () => {
     const sortedUsers = [...userlist].sort((a, b) =>
@@ -131,7 +122,6 @@ const UserTable: React.FC = () => {
     setShowsort(false);
   };
 
- 
   const Deleteuser = async (userId: string) => {
     Swal.fire({
       title: `Are you sure you want to delete this user?`,
@@ -142,7 +132,7 @@ const UserTable: React.FC = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await Axios.delete(`/auth/deleteuser/${userId}`);
+          await AdminAxios.delete(`/auth/deleteuser/${userId}`);
           setUserlist((prevUsers) =>
             prevUsers.filter((user) => user._id !== userId)
           );
@@ -158,7 +148,6 @@ const UserTable: React.FC = () => {
       }
     });
   };
-
 
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 

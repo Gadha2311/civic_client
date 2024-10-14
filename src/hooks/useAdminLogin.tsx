@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { message } from "antd";
-import Axios from "../axios";
+import {Axios} from "../axios";
 import { useNavigate } from "react-router-dom";
 import { useAdminAuth } from "../context/AdminAuthContext";
 import {  LoginValues, AdminLoginResponse } from "../Interfaces/adminInterface";

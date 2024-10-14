@@ -10,10 +10,7 @@ const Login = () => {
   const [ForgetPassword, setForgetPassword] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const {
-    error: signUpError,
-    registerUser,
-  } = useSignup();
+  const { error: signUpError, registerUser } = useSignup();
   const {
     loading: loginLoading,
     error: loginError,
@@ -53,44 +50,43 @@ const Login = () => {
     setFormValues({ ...formValues, [name]: value });
   };
 
-const handleSubmit = async (e: FormEvent) => {
-  e.preventDefault();
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
 
-  if (ForgetPassword) {
-    try {
-      await sendResetEmail(formValues.email);
-    } catch (error: any) {
-      alert(error.message);
+    if (ForgetPassword) {
+      try {
+        await sendResetEmail(formValues.email);
+      } catch (error: any) {
+        alert(error.message);
+      }
+    } else if (isSignIn) {
+      try {
+        await LoginUser(formValues);
+      } catch (error: any) {
+        alert(error.message);
+      }
+    } else {
+      if (formValues.password !== formValues.confirmpassword) {
+        Swal.fire({
+          icon: "warning",
+          title: "Oops...",
+          text: "Password Missmatch!",
+        });
+        return;
+      }
+      try {
+        await registerUser(formValues);
+        setFormValues({
+          username: "",
+          email: "",
+          password: "",
+          confirmpassword: "",
+        });
+      } catch (error: any) {
+        alert(error.message);
+      }
     }
-  } else if (isSignIn) {
-    try {
-      await LoginUser(formValues);
-    } catch (error: any) {
-      alert(error.message); 
-    }
-  } else {
-    if (formValues.password !== formValues.confirmpassword) {
-      Swal.fire({
-        icon: "warning",
-        title: "Oops...",
-        text: "Password Missmatch!",
-      });
-      return;
-    }
-    try {
-      await registerUser(formValues);
-      setFormValues({
-        username: "",
-        email: "",
-        password: "",
-        confirmpassword: "",
-      });
-    } catch (error: any) {
-      alert(error.message);
-    }
-  }
-};
-
+  };
 
   const handleSignUp = () => {
     setIsSignIn(false);

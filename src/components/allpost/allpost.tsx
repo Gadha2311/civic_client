@@ -7,7 +7,7 @@ import React, {
   useContext,
 } from "react";
 import { useAuth } from "../../context/AuthContext";
-import Axios from "../../axios";
+import {Axios} from "../../axios";
 import "./allpost.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {

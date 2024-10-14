@@ -12,7 +12,7 @@ import {
   AuthContextType,
   AnchorEl,
 } from "../../Interfaces/postInterface";
-import Axios from "../../axios";
+import {Axios} from "../../axios";
 import "./post.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -58,7 +58,6 @@ const Post: React.FC = () => {
     {}
   );
   const [newComment, setNewComment] = useState<string>("");
-  // const [commentingPostId, setCommentingPostId] = useState<string | null>(null);
   const [showComments, setShowComments] = useState<Record<string, boolean>>({});
 
   const fetchUserPosts = async () => {
@@ -144,11 +143,11 @@ const Post: React.FC = () => {
         `/auth/deletepost/${postIdToDelete}`);
       setDeleteDialogOpen(false);
       setPostIdToDelete(null);
-      toast.success(`Post deleted successfully.`);
+      // toast.success(`Post deleted successfully.`);
     } catch (error) {
       console.error("Error deleting post:", error);
       setPosts(originalPosts);
-      toast.error("Error deleting post.");
+      // toast.error("Error deleting post.");
     } finally {
       setLoadingActions((prev) => ({ ...prev, [postIdToDelete]: false }));
     }
@@ -268,11 +267,11 @@ const Post: React.FC = () => {
                   }
                 : post
             )
-          );
-          toast.success("Image deleted successfully.");
+          ); // toast.error("Error deleting image.");
+          // toast.success("Image deleted successfully.");
         } catch (error) {
           console.error("Error deleting image:", error);
-          toast.error("Error deleting image.");
+         
         }
       }
     });

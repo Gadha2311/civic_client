@@ -1,6 +1,6 @@
 import { useState, ChangeEvent, FormEvent } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import axios from "../../axios";
+import {Axios} from "../../axios";
 import "./resetpassword.css";
 
 const ResetPassword = () => {
@@ -27,7 +27,7 @@ const ResetPassword = () => {
     }
 
     try {
-      await axios.post(`/auth/reset-password/${token}`, { password, confirmPassword });
+      await Axios.post(`/auth/reset-password/${token}`, { password, confirmPassword });
       navigate("/");
     } catch (err) {
       setError("Error resetting password. Please try again.");

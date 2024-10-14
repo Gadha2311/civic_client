@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "../axios";
+import {Axios} from "../axios";
 
 const useForgotPassword = () => {
   const [loading, setLoading] = useState(false);
@@ -9,7 +9,7 @@ const useForgotPassword = () => {
     try {
       setLoading(true);
       setError("");
-      await axios.post("/auth/forgot-password", { email });
+      await Axios.post("/auth/forgot-password", { email });
       setLoading(false);
       alert("Password reset link sent!");
     } catch (err) {
