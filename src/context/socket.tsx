@@ -23,7 +23,7 @@ const SocketProvider = ({ children }: SocketContextProps) => {
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    const socketInstance = io("http://localhost:4000"); //civic-server.onrender.com 
+    const socketInstance = io("http://civic-server.onrender.com"); //localhost:4000
     setSocket(socketInstance);
 
     if(userdata && userdata?.user?._id){
