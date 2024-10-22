@@ -15,7 +15,7 @@ const header = {
 console.log(header, "okkkkkkkkkkk");
 
 const Axios: AxiosInstance = axios.create({
-  baseURL: " https://civic-server.onrender.com/api/", // http://localhost:4000/api/
+  baseURL: "http://localhost:4000/api/", // https://civic-server.onrender.com/api/
   headers: { "Content-Type": "application/json" },
   withCredentials: false,
 });
@@ -25,7 +25,7 @@ axios.defaults.headers.post["Content-Type"] =
 Axios.defaults.headers.common["Authorization"] = token?.userToken;
 
 const AdminAxios: AxiosInstance= axios.create({
-  baseURL:"https://civic-server.onrender.com/api/",
+  baseURL:"http://localhost:4000/api/",     
   headers: { "Content-Type": "application/json" },
   withCredentials: false,
 })

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import "./chat.css";
-import {Axios} from "../../axios";
+import { Axios } from "../../axios";
 import EmojiPicker from "emoji-picker-react";
 import Navbar from "../../components/navbar/navbar";
 import Sidebar from "../../components/sidebar/sidebar";
@@ -15,6 +15,7 @@ import {
   faPaperclip,
   faPhone,
   faFile,
+  faCheckDouble,
 } from "@fortawesome/free-solid-svg-icons";
 import Swal from "sweetalert2";
 import { useAuth } from "../../context/AuthContext";
@@ -60,32 +61,75 @@ const Chat: React.FC = () => {
   const [showDetailsDropdown, setShowDetailsDropdown] = useState(false);
   const [showLeaveGroupDropdown, setShowLeaveGroupDropdown] = useState(false);
   const [groupDetails, setGroupDetails] = useState<any>(null);
+  const [isTyping, setIsTyping] = useState(false);
+  const [typingMessage, setTypingMessage] = useState("");
   const [documentFile, setDocumentFile] = useState<File | null>(null);
-  // const [isOpenCallModal, setIsOpenCallModal] = useState<boolean>(false);
   const { userdata } = useAuth();
+
   const currentUserId = userdata?._id;
-  console.log(messages);
+  console.log(chatId);
 
   const { socket } = useContext(SocketContext);
 
   useEffect(() => {
-    if (selectedChat) {
-      socket?.on("receiveMessage", (message) => {
+    if (selectedChat && chatId) {
+      const receiveMessageHandler = (message: any) => {
         if (message.chatId === chatId) {
           setMessages((prevMessages) => [...prevMessages, message]);
+          handleUserClick(selectedChat);
+        } else {
+          fetchChatUsers();
         }
-      });
+      };
+      socket?.on("receiveMessage", receiveMessageHandler);
+      return () => {
+        socket?.off("receiveMessage", receiveMessageHandler);
+      };
     }
   }, [selectedChat, chatId, socket]);
+
+  useEffect(() => {
+    const receiveMessageHandler = () => {
+      fetchChatUsers();
+    };
+
+    socket?.on("receiveMessage", receiveMessageHandler);
+
+    return () => {
+      socket?.off("receiveMessage", receiveMessageHandler);
+    };
+  }, [socket]);
 
   useEffect(() => {
     fetchChatUsers();
   }, [groupCreated]);
 
+  useEffect(() => {
+    socket?.on("receivetyping", () => {
+      setTypingMessage(`is typing...`);
+      console.log(` is typing...`);
+    });
+
+    socket?.on("receiveStopTyping", () => {
+      setTypingMessage("");
+      console.log(` stopped typing.`);
+    });
+
+    return () => {
+      socket?.off("recivetyping");
+      socket?.off("reciveStopTyping");
+    };
+  }, []);
+
   const fetchChatUsers = async () => {
     try {
       const response = await Axios.get("/auth/getUserChats");
-      setChatUsers(response.data);
+      const sortedChats = response.data.sort((a: any, b: any) => {
+        const timeA = new Date(a.lastMessage?.timeStamp || 0).getTime();
+        const timeB = new Date(b.lastMessage?.timeStamp || 0).getTime();
+        return timeB - timeA;
+      });
+      setChatUsers(sortedChats);
     } catch (error) {
       console.error("Error fetching chat users:", error);
     }
@@ -118,20 +162,37 @@ const Chat: React.FC = () => {
       const response = await Axios.post("/auth/createOrGetChat", {
         selectedUserId: chat._id,
       });
-
       const chatData = response.data;
       setChatId(chatData._id);
       console.log(`chatId${chatId}`);
-
       socket?.emit("JoinRoom", chatData._id);
-
       const messagesResponse = await Axios.get(`/auth/chat/${chatId}/messages`);
       setMessages(messagesResponse.data);
-
       setSelectedChat(chatData.isGroupChat ? chatData : chat);
     } catch (error) {
       console.error("Error creating or fetching chat:", error);
     }
+  };
+
+  const handleTyping = (e: any) => {
+    setNewMessage(e.target.value);
+    if (isTyping == false) {
+      setIsTyping(true);
+      socket?.emit("typing", chatId);
+    }
+    if (isTyping == true) {
+      setTimeout(() => {
+        setIsTyping(false);
+        socket?.emit("stopTyping", chatId);
+      }, 2000);
+    }
+  };
+
+  const handleSend = () => {
+    handleSendMessage();
+    setNewMessage("");
+    setIsTyping(false);
+    socket?.emit("stopTyping", chatId);
   };
 
   const handleSendMessage = async () => {
@@ -176,6 +237,7 @@ const Chat: React.FC = () => {
       setImageFile(null);
       setDocumentFile(null);
       setEmoji(null);
+      fetchChatUsers();
     } catch (error) {
       console.error("Error sending message:", error);
     } finally {
@@ -319,7 +381,6 @@ const Chat: React.FC = () => {
 
     const userName = userdata?.username;
 
-    // generate token
     await generateToken("https://nextjs-token.vercel.app/api", userID).then(
       (res) => {
         const token = ZegoUIKitPrebuilt.generateKitTokenForProduction(
@@ -329,7 +390,6 @@ const Chat: React.FC = () => {
           userID,
           userName
         );
-        // create instance object from token
         zp = ZegoUIKitPrebuilt.create(token);
         zp.addPlugins({ ZIM });
       }
@@ -419,7 +479,9 @@ const Chat: React.FC = () => {
       <div className="chat-content">
         <div className="chat-header">
           <h2>{getChatName()}</h2>
-
+          {typingMessage && (
+            <div className="typing-indicator">{typingMessage}</div>
+          )}
           <FontAwesomeIcon
             icon={faPhone}
             className="call-icon"
@@ -537,6 +599,19 @@ const Chat: React.FC = () => {
                       </a>
                     )}
               </div>
+              {msg.senderId ===
+                JSON.parse(localStorage.getItem("user_data") ?? "")?.user
+                  ?._id &&
+                msg.ReadStatus && (
+                  <FontAwesomeIcon
+                    icon={faCheckDouble}
+                    style={{
+                      color: "#007bff",
+                      fontSize: "11px",
+                      marginLeft: "5px",
+                    }}
+                  />
+                )}
             </div>
           ))}
         </div>
@@ -546,7 +621,7 @@ const Chat: React.FC = () => {
             type="text"
             placeholder="Your message"
             value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
+            onChange={handleTyping}
           />
           <button
             className="emoji-btn"
@@ -594,7 +669,7 @@ const Chat: React.FC = () => {
 
           <button
             className="send-btn"
-            onClick={handleSendMessage}
+            onClick={handleSend}
             disabled={isSending}
           >
             <FontAwesomeIcon icon={faPaperPlane} />

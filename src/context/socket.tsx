@@ -23,7 +23,7 @@ const SocketProvider = ({ children }: SocketContextProps) => {
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    const socketInstance = io("https://civic-server.onrender.com"); //http://localhost:4000
+    const socketInstance = io("http://localhost:4000"); //https://civic-server.onrender.com
     setSocket(socketInstance);
 
     if(userdata && userdata?.user?._id){
@@ -47,6 +47,7 @@ const SocketProvider = ({ children }: SocketContextProps) => {
     socketInstance.on("receiveMessage", (message) => {
       console.log("Message received:", message);
       setAlertMessage(`New message from ${message.senderName}`);
+
     });
 
     return () => {
@@ -68,3 +69,5 @@ const SocketProvider = ({ children }: SocketContextProps) => {
 };
 
 export { SocketContext, SocketProvider };
+
+
