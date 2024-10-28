@@ -4,7 +4,7 @@ import {
   Routes,
   Navigate,
 } from "react-router-dom";
-import { ReactNode, Suspense, useEffect } from "react";
+import { ReactNode, Suspense} from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Authprovider, useAuth } from "./context/AuthContext";
 import { AdminAuthProvider, useAdminAuth } from "./context/AdminAuthContext";
