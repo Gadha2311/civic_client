@@ -65,10 +65,7 @@ const Chat: React.FC = () => {
   const [typingMessage, setTypingMessage] = useState("");
   const [documentFile, setDocumentFile] = useState<File | null>(null);
   const { userdata } = useAuth();
-
   const currentUserId = userdata?._id;
-  console.log(chatId);
-
   const { socket } = useContext(SocketContext);
 
   useEffect(() => {
@@ -85,6 +82,8 @@ const Chat: React.FC = () => {
       return () => {
         socket?.off("receiveMessage", receiveMessageHandler);
       };
+    } else {
+      socket?.on("receiveMessage", fetchChatUsers);
     }
   }, [selectedChat, chatId, socket]);
 
@@ -119,7 +118,7 @@ const Chat: React.FC = () => {
       socket?.off("recivetyping");
       socket?.off("reciveStopTyping");
     };
-  }, []);
+  }, [socket]);
 
   const fetchChatUsers = async () => {
     try {
@@ -164,9 +163,10 @@ const Chat: React.FC = () => {
       });
       const chatData = response.data;
       setChatId(chatData._id);
-      console.log(`chatId${chatId}`);
       socket?.emit("JoinRoom", chatData._id);
-      const messagesResponse = await Axios.get(`/auth/chat/${chatId}/messages`);
+      const messagesResponse = await Axios.get(
+        `/auth/chat/${chatData._id}/messages`
+      );
       setMessages(messagesResponse.data);
       setSelectedChat(chatData.isGroupChat ? chatData : chat);
     } catch (error) {
@@ -233,11 +233,12 @@ const Chat: React.FC = () => {
       const message = response.data;
       socket?.emit("sendMessage", message);
       setMessages((prevMessages) => [...prevMessages, message]);
+      handleUserClick(selectedChat);
+      fetchChatUsers();
       setNewMessage("");
       setImageFile(null);
       setDocumentFile(null);
       setEmoji(null);
-      fetchChatUsers();
     } catch (error) {
       console.error("Error sending message:", error);
     } finally {

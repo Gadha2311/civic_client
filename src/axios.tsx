@@ -3,42 +3,31 @@ import axios, { AxiosInstance } from "axios";
 const token = JSON.parse(localStorage.getItem("user_data") as string);
 console.log(token);
 
-const admintoken=JSON.parse(localStorage.getItem("admin_data") as string)
+const admintoken = JSON.parse(localStorage.getItem("admin_data") as string);
 console.log(admintoken);
-
-
-
-
-const header = {
-  Authorization: token ? "Bearer " + token : "Bearer ",
-};
-console.log(header, "okkkkkkkkkkk");
-
 const Axios: AxiosInstance = axios.create({
-  baseURL: " https://civic-server.onrender.com/api/", // http://localhost:4000/api/
+  baseURL: "https://civic-server.onrender.com/api/",  //http://localhost:4000/api/ 
   headers: { "Content-Type": "application/json" },
   withCredentials: false,
 });
 
 axios.defaults.headers.post["Content-Type"] =
   "application/x-www-form-urlencoded";
-Axios.defaults.headers.common["Authorization"] = token?.userToken;
+// Axios.defaults.headers.common["Authorization"] = token?.userToken;
 
-const AdminAxios: AxiosInstance= axios.create({
-  baseURL:" https://civic-server.onrender.com/api/",     
+const AdminAxios: AxiosInstance = axios.create({
+  baseURL: "http://localhost:4000/api/",
   headers: { "Content-Type": "application/json" },
   withCredentials: false,
-})
+});
 
-AdminAxios.defaults.headers.common["Authorization"]=admintoken?.adminToken;
-
-
+AdminAxios.defaults.headers.common["Authorization"] = admintoken?.adminToken;
 
 export const setupAxiosInterceptors = (logout: () => void) => {
   Axios.interceptors.response.use(
     (response) => {
       return response;
-    },  
+    },
     (error) => {
       console.log(error);
 
@@ -57,4 +46,4 @@ export const setupAxiosInterceptors = (logout: () => void) => {
   );
 };
 
-export  {Axios,AdminAxios};
+export { Axios, AdminAxios };
