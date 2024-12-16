@@ -281,14 +281,14 @@ const UserProfile: React.FC = () => {
               ? 9
               : isTabScreen
               ? 20
-              : 75,
+              : 65,
             marginTop: isExtraSmallScreen
               ? 10
               : isSmallScreen
               ? -5
               : isTabScreen
               ? -20
-              : 0,
+              : 10,
           }}
         >
           <Paper elevation={3} style={{ padding: "40px" }}>
